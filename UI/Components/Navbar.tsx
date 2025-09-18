@@ -1,7 +1,8 @@
+"use client";
+
 import { Navbar,NavbarBrand,NavbarContent,NavbarItem } from "@heroui/navbar";
 import {  Link} from "@heroui/link";
 import { Button } from "@heroui/button";
-
 export function NavbarComponet(){
     return  <Navbar>
    
