@@ -1,4 +1,5 @@
 export interface GameDetail {
+  parent_platforms: never[];
   id: number;
   slug: string;
   name: string;

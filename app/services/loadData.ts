@@ -1,10 +1,10 @@
-import { Games } from '@/types';
+import { Games, Screenshots } from '@/types';
 import { GameDetail } from '@/types/gameDetail';
 import { sql } from '@/supabase';
 
 
 export async function LoadGames() {
-  // Crear fallback company
+
   const [unknownCompany] = await sql`
     INSERT INTO companies (name)
     VALUES ('Unknown')
@@ -20,6 +20,7 @@ export async function LoadGames() {
   const data: Games = await response.json();
 
   for (const game of data.results) {
+    
     // Traer detalles específicos del juego
     const detailsResp = await fetch(`https://api.rawg.io/api/games/${game.id}?key=${process.env.RAWG_KEY}`);
     const details: GameDetail = await detailsResp.json();
@@ -39,14 +40,15 @@ export async function LoadGames() {
 
     // Insertar juego
 const [insertedGame] = await sql/*sql*/`
-  INSERT INTO games (title, description, img_url, release_at, price, company_id)
+  INSERT INTO games (title, description, img_url, release_at, price, company_id,metacritic)
   VALUES (
     ${details.name},
     ${details.description_raw || details.description},
     ${details.background_image},
     ${details.released || new Date()},
-    70,
-    ${companyId}
+    70, 
+    ${companyId},
+    ${details.rating??0}
   )
   ON CONFLICT (title) DO NOTHING
   RETURNING id
@@ -94,6 +96,46 @@ const gameId = insertedGame?.id ?? (
         ON CONFLICT DO NOTHING
       `;
     }
+    // insert screenshoots
+    const gameScreenShoots= await fetch(`https://api.rawg.io/api/games/${game.id}/screenshots?key=${process.env.RAWG_KEY}`)
+    const dataSceenShoots:Screenshots= await gameScreenShoots.json()
+    for (const screenshoots of dataSceenShoots.results??[]){
+   const [insertedScreenshoot] = await sql`
+  INSERT INTO screenshoots (screenshoot_url) 
+  VALUES (${screenshoots.image}) 
+  ON CONFLICT (screenshoot_url) DO NOTHING
+  RETURNING id
+`;
+           const screenshootId = insertedScreenshoot?.id 
+  ?? (await sql`SELECT id FROM screenshoots WHERE screenshoot_url=${screenshoots.image}`)[0].id;
+
+await sql`
+  INSERT INTO screenshoots_game (game_id, screenshoot_id) 
+  VALUES (${gameId}, ${screenshootId})
+`;
+    }
+
+  //insert tags
+  for (const tag of details.tags) {
+    const [insertedTag] = await sql`
+  INSERT INTO new_tags (name) 
+  VALUES (${tag.name}) 
+  ON CONFLICT (name) DO NOTHING 
+  RETURNING id
+`;
+
+const tagId = insertedTag?.id 
+  ?? (await sql`SELECT id FROM new_tags WHERE name=${tag.name}`)[0].id;
+
+await sql`
+ INSERT INTO new_tags_game (game_id, tag_id)
+VALUES (${gameId}, ${tagId})
+ON CONFLICT (tag_id, game_id) DO NOTHING;
+
+`;
+
+  }
+  
   }
 
   console.log('✅ Juegos cargados correctamente');

@@ -1,3 +1,8 @@
+export interface gameDetailResponse{
+    game:Games[],
+    tags:tags[],
+    screenshoots:sreenshoots[]
+}
 export interface Games{
     id:string,
     img_url:string,
@@ -10,6 +15,13 @@ export interface Games{
     release_at:Date,
     stock:number,
     updated_at:Date
+}
+export interface tags{
+    tag_id:number
+    tag_name:string
+}
+export interface sreenshoots{
+    screenshot_url:string
 }
 export interface Genres{
     id:string,

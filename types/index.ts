@@ -146,3 +146,18 @@ export interface Game {
     name:  string;
     added: number;
 }
+
+export interface Screenshots {
+    count:    number;
+    next:     null;
+    previous: null;
+    results:  ResultScreenshots[];
+}
+
+export interface ResultScreenshots {
+    id:         number;
+    image:      string;
+    width:      number;
+    height:     number;
+    is_deleted: boolean;
+}

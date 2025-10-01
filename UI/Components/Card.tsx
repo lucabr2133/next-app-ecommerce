@@ -18,7 +18,7 @@ export function ProductCart({game}:{game:Games}){
               
                <Card className="col-span-12 sm:col-span-4 h-[300px]">
         <CardHeader className="absolute z-10 top-1 flex-col items-start!">
-                <p className="text-tiny text-white/60 uppercase font-bold">{game.title}</p>
+                <p className="text-tiny text-gray-50 uppercase font-bold">{game.title}</p>
 
         </CardHeader>
         <Image

@@ -1,18 +1,27 @@
-import { Games } from "@/types/database";
+import { Games, sreenshoots, tags } from "@/types/database";
 import { ProductCart } from "@/UI/Components/Card";
 import { Button } from "@heroui/button";
 import { Card,CardBody,CardFooter,CardHeader } from "@heroui/card";
 import { Image } from "@heroui/image";
-
-export default function MainContent({game}:{game:Games}){
+import {Chip} from "@heroui/chip";
+import { Carousel } from "@/UI/Components/Carrousel";
+import { CarouselGameDetail } from "./Carroulsel";
+export default function MainContent({game,tags,screenshoots}:{game:Games,tags:tags[],screenshoots:sreenshoots[]}){
     
     return <>
         <section className="">
             <Card radius="none" className="m-0 border-none" >
-                <CardBody  className=" grid grid-cols-2 gap-10" >
-                          <Image  className=""  src={`${game.img_url}`}>
-
-                        </Image>
+                <CardBody   className="grid grid-cols-2 gap-10 " >
+                    <div className="" >
+                         <CarouselGameDetail images={screenshoots}></CarouselGameDetail>
+                        <span className="mt-4 flex flex-wrap gap-2">
+                      {tags.map(tag=>(
+                            <Chip variant="bordered" color="warning" size="sm" radius="sm"  key={tag.tag_id}>{tag.tag_name}</Chip>
+                        ))} 
+                        </span>
+                     
+                    </div>
+                        
                         <Card>
                             <CardHeader className="flex justify-center text-4xl font-bold  text-white/60 uppercase ">{game.title}</CardHeader>
                             <CardBody className="px-32">

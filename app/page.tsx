@@ -3,6 +3,7 @@ import { ProductCart } from "@/UI/Components/Card";
 import { Carousel } from "@/UI/Components/Carrousel";
 import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
+import { LoadGames } from "./services/loadData";
 
 export default async function page(){
     // const games = await fetch('https://api.rawg.io/api/games?key=53c5fa302d924b35b320957cc61a057a&metacritic=80,100&page_size=3000',{
