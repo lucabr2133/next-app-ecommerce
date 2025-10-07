@@ -4,14 +4,14 @@ import { Carousel } from "@/UI/Components/Carrousel";
 import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
 import { LoadGames } from "./services/loadData";
-
+import { CarouselCard } from "@/UI/Components/CarrouselCard";
 export default async function page(){
     // const games = await fetch('https://api.rawg.io/api/games?key=53c5fa302d924b35b320957cc61a057a&metacritic=80,100&page_size=3000',{
     //     headers: {
 	// 	'x-rapidapi-host': 'rawg-video-games-database.p.rapidapi.com'
 	// }
     // })
-    const newGames= await fetch('http://localhost:3000/api/games?quantity=3')
+    const newGames= await fetch('http://localhost:3000/api/games?quantity=10')
     const GamesResponse= await fetch('http://localhost:3000/api/games?quantity=27')
 
     const data:Games[]= await newGames.json()
@@ -26,15 +26,12 @@ export default async function page(){
         <section   className=" col-start-1 col-end-4   flex gap-5 flex-col">
             <div className="bg-black rounded-2xl p-5">
                  <span className="flex justify-between">
-             <h2> New Products</h2>
-                <Link className="cursor-pointer">See more {'>'}</Link>
+             <h2> New Games</h2>
                 </span>
-            <span  className=" b flex p-5 gap-10 w-full">
-               {data.map((game)=>(
-                       <ProductCart game={game} key={game.id}>
-                      
-                       </ProductCart>
-                   ))}
+            <span  className="  p-5 gap-10  flex ">
+               <CarouselCard games={data} ></CarouselCard>
+                     
+                  
 
             </span>
             </div>
@@ -46,11 +43,8 @@ export default async function page(){
                         <Link className="cursor-pointer">See more {'>'}</Link>
                 </span>
                 <span  className=" b flex p-5 gap-10 w-full">
-                   {data.map((game)=>(
-                       <ProductCart game={game} key={game.id}>
-                      
-                       </ProductCart>
-                   ))}
+                               <CarouselCard games={data} ></CarouselCard>
+
                  
                 
 
