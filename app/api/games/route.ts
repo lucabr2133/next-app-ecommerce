@@ -60,7 +60,6 @@ if(search && search !== 'undefined'&&genre && genre!='undefined'){
 }
   // Ejecutar la consulta
   const data = await query;
-  console.log(data);
   
   return Response.json(data);
 }

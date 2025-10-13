@@ -12,7 +12,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       .then((data) => setCartList(data))
       .catch(console.error);
   }, []);
-console.log(cartList);
 
   return <CartContext.Provider value={{ cartList, setCartList }}>
       {children}

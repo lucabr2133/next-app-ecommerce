@@ -10,9 +10,6 @@ export function ShopIcon(){
 }
 export function         ProductCart({game}:{game:Games}){
     const cartContext=useContext(CartContext)
-     const isInArray = Array.isArray(cartContext.cartList)
-  ? cartContext.cartList.some((gameCart) => gameCart.id === game.id)
-  : false;
 
 
     
@@ -36,7 +33,7 @@ export function         ProductCart({game}:{game:Games}){
                 </Link>}
       
         {game.title!=='See more'&&  <CardFooter className="flex ">    
-                {isInArray?   <Button onPress={()=>{
+                { cartContext.cartList.some((gameCart) => gameCart.id === game.id)?   <Button onPress={()=>{
                         const newcCart=cartContext.cartList.filter(gameCart=>gameCart.id!=game.id)
                         cartContext.setCartList(newcCart)
                 }} as={Link}  className="m-2" size='sm' variant="flat"  color="danger">
@@ -55,8 +52,8 @@ export function         ProductCart({game}:{game:Games}){
                                        
                                 
                         })
-                     const cartArray = Array.isArray(cartContext.cartList) ? cartContext.cartList : [];
-                        const newCart = [...cartArray, game];
+                        const newcCart=[...cartContext.cartList,game]
+                        cartContext.setCartList(newcCart)
 
                 }} as={Link}  className="m-2" size='sm' variant="flat"  color="primary">
                         <ShopIcon></ShopIcon>

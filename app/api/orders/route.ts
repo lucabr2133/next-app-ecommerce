@@ -5,7 +5,7 @@ export async function GET(request:Request) {
     const userCart= await sql `Select * from carts where user_id=${userId}`
 
     const cartList=await sql `select games.* from games inner join carts_games cg on games.id=cg.game_id  where cg.cart_id=${userCart[0].id}`
-   return Response.json({cartList})
+   return Response.json(cartList)
 }
 export async function DELETE(request:Request) {
     

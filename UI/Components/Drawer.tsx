@@ -6,12 +6,10 @@ import { ProductCart } from "./Card";
 export function DrawerComponent({isOpen,onOpenChange}:{isOpen:boolean,onOpenChange:()=>void}){
     
     const cartContext=useContext(CartContext)
-    console.log(cartContext,'a');
-    
-const totalPrice = Array.isArray(cartContext.cartList)
-  ? cartContext.cartList.reduce((acc, game) => acc + Number(game.price), 0)
-  : 0;
-
+const totalPrice = cartContext.cartList.reduce(
+  (acc, game) => acc + Number(game.price),
+  0
+);
 
     
     return   <Drawer isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -20,13 +18,14 @@ const totalPrice = Array.isArray(cartContext.cartList)
             <>
               <DrawerHeader className="flex flex-col gap-1">Drawer Title</DrawerHeader>
               <DrawerBody>
-                <div className="">
-                    {cartContext.cartList.length===0 ? <>No hay juegos en el carrito</>:  cartContext.cartList.map((game)=>(
+                <div className=""   >
+  {
+                cartContext.cartList.map((game)=>(
                     <ProductCart game={game} key={game.id}>
 
                     </ProductCart>
-                ))}
-
+                ))
+               }
                 </div>
              
               </DrawerBody>
