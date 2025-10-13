@@ -14,7 +14,8 @@ export interface Games{
     create_at:Date,
     release_at:Date,
     stock:number,
-    updated_at:Date
+    updated_at:Date,
+    metacritic:Number
 }
 export interface tags{
     tag_id:number

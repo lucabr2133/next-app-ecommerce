@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardBody, CardFooter } from "@heroui/card";
-import {  Button } from "@heroui/button";
+
 import { Games } from "@/types/database";
 import { ProductCart } from "./Card";
+import { Card, CardBody, Button } from "@heroui/react";
 
 
 

@@ -1,4 +1,4 @@
-import { gameDetailResponse } from "@/types/database"
+import { gameDetailResponse, Genres } from "@/types/database"
 import MainContent from "../(components)/MainContent"
 
 
@@ -14,7 +14,7 @@ export default async  function Page({ params }: { params: Promise<{ idGames: str
     const screenshoots=data.screenshots
 return <>
     <main className="p-0 m-0  bg-black " >
-      <MainContent screenshoots={screenshoots} tags={tags} game={gameData}>
+      <MainContent   screenshoots={screenshoots} tags={tags} game={gameData}>
       
       </MainContent>
     </main>

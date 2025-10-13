@@ -1,22 +1,45 @@
 "use client";
 
-import { Navbar,NavbarBrand,NavbarContent,NavbarItem } from "@heroui/navbar";
-import {Input} from '@heroui/input'
-import {  Link} from "@heroui/link";
 import { Button } from "@heroui/button";
+import { Navbar, NavbarContent, NavbarItem, Input,Link, useDisclosure, Drawer} from "@heroui/react";
+import { useParams, usePathname, useSearchParams,useRouter } from "next/navigation";
+
+import { useDebouncedCallback } from 'use-debounce';
+import { DrawerComponent } from "./Drawer";
+import { useContext } from "react";
+import { CartContext } from "@/app/contex/contex";
 export function NavbarComponet(){
-    return  <Navbar className="flex">
+  const CartContex=useContext(CartContext)
+  
+  const searchParams=useSearchParams()
+  const params=new URLSearchParams(searchParams)
+  const path= usePathname()
+  const router=useRouter()
+  const {isOpen,onOpen,onOpenChange} =useDisclosure()
+  function onHandleSearch(search:string){
+    
+  if(search){
+    params.set('search',search)
+  }else{
+    params.delete('search')
+  }
+  router.replace(`http://localhost:3000/games?${params.toString()}`)
+  }
+    return <>
+    <Navbar className="flex justify-between m-0 w-full">
    
-      <NavbarContent justify='start' className=" sm:flex gap-4 ">
+      <NavbarContent    className="sm:flex gap-4 ">
         <NavbarItem>
           <Link href="http://localhost:3000/">My ecommerce page</Link>
         </NavbarItem>
         <NavbarItem className="w-full">
-            <Input placeholder="Search..." radius="none" ></Input>
-
+            <Input   defaultValue={searchParams.get('search')?.toString()} onChange={useDebouncedCallback((e)=>{
+              onHandleSearch(e.target.value)
+            },500)}  className="min-w-[700px]" placeholder="Search Games..." radius="full" variant="faded" color="primary"   ></Input>
+ 
         </NavbarItem>
       </NavbarContent>  
-      <NavbarContent  justify="end">
+      <NavbarContent  className="w-full">
         <NavbarItem>
                 <Link>Home page</Link>
         </NavbarItem>
@@ -26,7 +49,15 @@ export function NavbarComponet(){
             <NavbarItem>
                 <Link>Dashboard</Link>
         </NavbarItem>
+        <NavbarItem>
+          <Button onPress={onOpen} >My cart</Button>
+        </NavbarItem>
+
       </NavbarContent>
   
     </Navbar>
+  <DrawerComponent  isOpen={isOpen} onOpenChange={onOpenChange}>
+
+  </DrawerComponent>
+    </>  
 }
