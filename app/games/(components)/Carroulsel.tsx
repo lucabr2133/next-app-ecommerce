@@ -50,21 +50,7 @@ export  function CarouselGameDetail({ images }: {images:sreenshoots[]}) {
         </Button>
       </CardBody>
 
-      {/* <CardFooter className="bg-black/40 text-white items-start  flex flex-col  h-60">
-      <h2 className=" uppercase font-bold text-4xl mb-10">
-        {games[currentIndex].title}
-
-      </h2>
-      <p className="w-1/2">
-        {games[currentIndex].description.slice(0,300)+'...'}
-      </p>
-      <span className="mt-5">
-        <Button variant="solid" color="primary">Buy now</Button>
-        
-
-      </span>
-       
-      </CardFooter> */}
+   
     </Card>
   );
 }

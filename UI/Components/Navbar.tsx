@@ -2,18 +2,14 @@
 
 import { Button } from "@heroui/button";
 import { Navbar, NavbarContent, NavbarItem, Input,Link, useDisclosure, Drawer} from "@heroui/react";
-import { useParams, usePathname, useSearchParams,useRouter } from "next/navigation";
+import {  useSearchParams,useRouter } from "next/navigation";
 
 import { useDebouncedCallback } from 'use-debounce';
 import { DrawerComponent } from "./Drawer";
-import { useContext } from "react";
-import { CartContext } from "@/app/contex/contex";
 export function NavbarComponet(){
-  const CartContex=useContext(CartContext)
   
   const searchParams=useSearchParams()
   const params=new URLSearchParams(searchParams)
-  const path= usePathname()
   const router=useRouter()
   const {isOpen,onOpen,onOpenChange} =useDisclosure()
   function onHandleSearch(search:string){

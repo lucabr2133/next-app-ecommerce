@@ -2,12 +2,11 @@
 
 import { Games, Genres } from "@/types/database";
 import { ProductCart } from "@/UI/Components/Card";
-import { Dropdown, DropdownTrigger, Button, DropdownMenu, DropdownItem, Radio, RadioGroup, Listbox, ListboxItem } from "@heroui/react";
+import { Dropdown, DropdownTrigger, Button, DropdownMenu, DropdownItem, Radio, RadioGroup, Listbox, ListboxItem ,Selection} from "@heroui/react";
 import React, { useEffect, useMemo } from "react";
 import { useState } from "react";
 import { Pagination } from "./Pagination";
 import { notFound, usePathname, useRouter, useSearchParams } from "next/navigation";
-
 export function MainGames({data,genres}:{data:Games[],genres:Genres[]}){
  
   const Params=useSearchParams()
@@ -39,8 +38,8 @@ const dataSlice = useMemo(() => {
 
 // Página actual
 const games = useMemo(() => dataSlice[index], [index, dataSlice]);
-      const [selectedKeys, setSelectedKeys] = React.useState(new Set(["text"]));
-      const [selectedKeysGenre, setSelectedKeysGenre] = React.useState(new Set(["text"]));
+      const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
+      const [selectedKeysGenre, setSelectedKeysGenre] = React.useState<Selection>(new Set([]));
 
       
 

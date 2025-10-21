@@ -1,7 +1,7 @@
 export interface gameDetailResponse{
     game:Games[],
     tags:tags[],
-    screenshoots:sreenshoots[]
+    screenshots:sreenshoots[]
 }
 export interface Games{
     id:string,
@@ -22,6 +22,7 @@ export interface tags{
     tag_name:string
 }
 export interface sreenshoots{
+    id:string
     screenshot_url:string
 }
 export interface Genres{

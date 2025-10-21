@@ -8,7 +8,16 @@ export async function GET(request:Request) {
    return Response.json(cartList)
 }
 export async function DELETE(request:Request) {
+    const userId='8ba23927-2689-4864-bb4c-378816e01c18'
+
+    const body=await request.json()
+    const userCart= await sql `Select * from carts where user_id=${userId}`
+
+    const {gameId}=body
+    const deleteGameCart= await sql `DELETE  FROM carts_games where game_id=${gameId} and cart_id=${userCart[0].id}`
     
+   return Response.json({message:'Delete succesfully'})
+
 }
 export async function POST(request:Request) {
     const userId='8ba23927-2689-4864-bb4c-378816e01c18'

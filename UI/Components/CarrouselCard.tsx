@@ -14,6 +14,16 @@ export  function CarouselCard({ games }: {games:Games[]}) {
 games.push({
     id:'11',
     title:'See more',
+    create_at:new Date,
+    description:'',
+    id_developer:'',
+    id_platform:'',
+    img_url:'',
+    metacritic:0,
+    price:70,
+    release_at:new Date,
+    stock:0,
+    updated_at:new Date
 })
  const gameLengh=11-2
   const next = () => {

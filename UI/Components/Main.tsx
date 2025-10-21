@@ -1,9 +1,7 @@
 "use client"
 
 import { Games, Genres } from "@/types/database";
-import { Button } from "@heroui/react";
-import {  Dropdown,  DropdownTrigger,  DropdownMenu,  DropdownSection,  DropdownItem} from "@heroui/react";
-import Link from "next/link";
+import { Button, Link } from "@heroui/react";
 import { ProductCart } from "./Card";
 import { Carousel } from "./Carrousel";
 import { CarouselCard } from "./CarrouselCard";
@@ -48,7 +46,7 @@ export function MainHome({data,dataGenres,data30Games}:{data:Games[],dataGenres:
             <div className="grid grid-cols-2  gap-5  p-3  ">
                 {dataGenres.map(genres=>(
                     <div key={genres.id} className="">
-                       <Button variant="light"  color="default" radius="sm" className="w-full text-[13px] border-1">{genres.name}</Button>
+                       <Button as={Link} href={`/games?genre=${genres.id}`} variant="light"  color="default" radius="sm" className="w-full text-[13px] border-1">{genres.name}</Button>
 
                     </div>
                 ))}

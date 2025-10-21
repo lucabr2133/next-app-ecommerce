@@ -1,4 +1,4 @@
-import { Games } from "@/types";
+import { Games } from "@/types/database";
 import { Button } from "@heroui/react";
 import { SetStateAction } from "react";
 

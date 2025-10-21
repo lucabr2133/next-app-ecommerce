@@ -1,6 +1,6 @@
 "use client"
 import { CartContext } from "@/app/contex/contex";
-import { Button, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader } from "@heroui/react";
+import { Button, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, Link } from "@heroui/react";
 import { useContext } from "react";
 import { ProductCart } from "./Card";
 export function DrawerComponent({isOpen,onOpenChange}:{isOpen:boolean,onOpenChange:()=>void}){
@@ -34,7 +34,7 @@ const totalPrice = cartContext.cartList.reduce(
                 <Button color="danger" variant="light" onPress={onClose}>
                   Close
                 </Button>
-                <Button color="primary" onPress={onClose}>
+                <Button color="primary" as={Link} href="/checkout">
                   Buy now
                 </Button>
               </DrawerFooter>
