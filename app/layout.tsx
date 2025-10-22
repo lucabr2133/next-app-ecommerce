@@ -3,6 +3,8 @@ import { Providers } from "./providers";
 import { NavbarComponet } from "@/UI/Components/Navbar";
 import { inter } from "@/fonts";
 import { CartProvider } from "./contex/cartProvider";
+import {SessionProvider} from 'next-auth/react'
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
     <html
@@ -16,6 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="bg-black dark text-foreground m-0">
         <Providers>
+
             <CartProvider>
 
           <NavbarComponet />

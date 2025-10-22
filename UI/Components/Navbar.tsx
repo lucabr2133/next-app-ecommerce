@@ -3,7 +3,7 @@
 import { Button } from "@heroui/button";
 import { Navbar, NavbarContent, NavbarItem, Input,Link, useDisclosure, Drawer} from "@heroui/react";
 import {  useSearchParams,useRouter } from "next/navigation";
-
+import {  ShoppingCartIcon} from "lucide-react";
 import { useDebouncedCallback } from 'use-debounce';
 import { DrawerComponent } from "./Drawer";
 export function NavbarComponet(){
@@ -46,7 +46,7 @@ export function NavbarComponet(){
                 <Link>Dashboard</Link>
         </NavbarItem>
         <NavbarItem>
-          <Button onPress={onOpen} >My cart</Button>
+          <Button isIconOnly variant="flat" onPress={onOpen} ><ShoppingCartIcon></ShoppingCartIcon></Button>
         </NavbarItem>
 
       </NavbarContent>

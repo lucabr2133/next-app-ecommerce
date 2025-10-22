@@ -1,5 +1,4 @@
 import { Games, Genres } from "@/types/database";
-
 import { MainHome } from "@/UI/Components/Main";
 export default async function page(){
   
