@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import { sql } from "@/supabase"
 import { Games } from "@/types/database";
  function generateKey(){
@@ -17,9 +18,12 @@ import { Games } from "@/types/database";
 // }
 export async  function POST(request:Request){
     const body= await request.json()
-    const {games,userId,status}:{games:Games[],userId:string ,status:string  }=body
- 
-    const order=await sql `insert into orders (user_id,status) values (${userId},${status}) returning id `
+    const {games,status}:{games:Games[],userId:string ,status:string  }=body
+    const session=await auth()
+    if(!session?.user?.id){
+         throw new Error("User not authenticated");
+    }
+    const order=await sql `insert into orders (user_id,status) values (${session?.user?.id},${status}) returning id `
     for (const game of games) {
         const key=generateKey()
          await sql `insert into order_items (game_id,order_id,code_key,quantity) values(

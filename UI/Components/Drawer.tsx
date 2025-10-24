@@ -16,7 +16,7 @@ const totalPrice = cartContext.cartList.reduce(
             <DrawerContent>
           {(onClose) => (
             <>
-              <DrawerHeader className="flex flex-col gap-1">Drawer Title</DrawerHeader>
+              <DrawerHeader className="flex flex-col gap-1">My Cart</DrawerHeader>
               <DrawerBody>
                 <div className=""   >
   {

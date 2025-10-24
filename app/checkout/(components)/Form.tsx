@@ -3,6 +3,7 @@ import { Games } from "@/types/database";
 import { ShopCart } from "@/UI/Components/CartItem";
 import { Button, DateInput, DatePicker, Form,Input, Select, SelectItem, Spacer} from "@heroui/react"
 import {getLocalTimeZone, today} from "@internationalized/date";
+import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -13,7 +14,6 @@ export default function FormComponent({games}:{games:Games[]}){
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         games,
-        userId: "8ba23927-2689-4864-bb4c-378816e01c18",
         status: "pending",
       }),
     });
@@ -32,7 +32,6 @@ export default function FormComponent({games}:{games:Games[]}){
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: "completed" }),
     });
-    await fetch('/api/orders${}')
     router.push(`/checkout/success?order=${orderId}`);
   }
     const [step,setStep]=useState(0)

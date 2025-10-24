@@ -1,10 +1,16 @@
 "use server";
-import NextAuth, { User } from 'next-auth';
+import NextAuth from 'next-auth';
 import { authConfig } from './auth.config';
 import bcrypt from 'bcryptjs'
 import Credentials from 'next-auth/providers/credentials';
  import {z} from 'zod'
  import { sql } from '@/supabase';
+export type User = {
+  id: number;
+  username: string;
+  password: string;
+  email?: string; // opcional
+};
  async function getUser(username: string): Promise<User | undefined> {
   try {
     const user = await sql<User[]>`SELECT * FROM users WHERE username=${username}`;
@@ -19,7 +25,11 @@ export const { auth, signIn, signOut } = NextAuth({
   providers: [Credentials({
     async authorize(credentials){
       
-        const parsedCredentials=z.object({username:z.string(),password:z.string()}).safeParse(credentials)
+        const parsedCredentials=z.object({username:z.string({
+          error:'username is required'
+        }),password:z.string(
+          {error:'password is required'}
+        )}).safeParse(credentials)
         if (parsedCredentials.success) {
           
           const { username, password } = parsedCredentials.data;
@@ -27,11 +37,18 @@ export const { auth, signIn, signOut } = NextAuth({
           
           
           if (!user) return null;
- 
-          if(user.password==password)   return user
+          const isPasswordMatch=await bcrypt.compare(password,user.password)
+         if(isPasswordMatch) return {
+          name:user.username,
+          id:user.id,
+          email:user.email,
+         
+         }
         }
         console.log('Invalid credentials');
         return null;
     }
   })],
 });
+
+export { authConfig };

@@ -1,17 +1,23 @@
 "use client";
 
 import { Button } from "@heroui/button";
-import { Navbar, NavbarContent, NavbarItem, Input,Link, useDisclosure, Drawer} from "@heroui/react";
+import { Navbar, NavbarContent, NavbarItem, Input,Link, useDisclosure, Drawer, Form} from "@heroui/react";
 import {  useSearchParams,useRouter } from "next/navigation";
-import {  ShoppingCartIcon} from "lucide-react";
+import {  CircleUser, ShoppingCartIcon} from "lucide-react";
 import { useDebouncedCallback } from 'use-debounce';
 import { DrawerComponent } from "./Drawer";
+import { signOut, useSession } from "next-auth/react";
+import { LogOut } from "@/services/logOut";
 export function NavbarComponet(){
+   const { data: session, status } = useSession();
   
   const searchParams=useSearchParams()
   const params=new URLSearchParams(searchParams)
   const router=useRouter()
   const {isOpen,onOpen,onOpenChange} =useDisclosure()
+    if (status === "loading") return <p>Loading...</p>;
+  if (!session) return <p>Not logged in</p>;
+  
   function onHandleSearch(search:string){
     
   if(search){
@@ -45,10 +51,20 @@ export function NavbarComponet(){
             <NavbarItem>
                 <Link>Dashboard</Link>
         </NavbarItem>
-        <NavbarItem>
+    
+         
+  <NavbarItem>
+    <Form action={LogOut}>
+      <Button type="submit"  variant="flat" color="danger"  >Log out</Button>
+    </Form>
+          
+        </NavbarItem>
+            <NavbarItem>
           <Button isIconOnly variant="flat" onPress={onOpen} ><ShoppingCartIcon></ShoppingCartIcon></Button>
         </NavbarItem>
-
+         <NavbarItem>
+          <Button as={Link} isIconOnly variant="flat" href={`/profile/${session?.user?.name}`} ><CircleUser></CircleUser></Button>
+        </NavbarItem>
       </NavbarContent>
   
     </Navbar>
