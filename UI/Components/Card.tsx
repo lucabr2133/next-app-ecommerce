@@ -13,26 +13,26 @@ export function ProductCart({game}:{game:Games}){
 
 
     
-    return         <Card  className= {`my-5 mx-2 w-100 h-68 cursor-pointer border-1 border-black-600   `}  >
+    return         <Card  className= {`my-5 mx-2 w-100 h-68 cursor-pointer border-y-1 border-y-amber-500  `}  style={{
+        transition:'all 0.5s ease'
+    }}>
               
                <Card className="col-span-12 sm:col-span-4 h-[300px]">
         <CardHeader className="absolute z-10 top-1 flex-col items-start! ">
                 
-                {game.title!=='See more'&&<p className="text-tiny text-gray-50 uppercase font-bold">{game.title}</p>}
-
+                {game.title!=='See more'&&<p className="text-4xl md:text-tiny font-extrabold uppercase tracking-wide drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">{game.title}</p>}
 
         </CardHeader>
                         {game.title!=='See more'?  <Image
-        
           removeWrapper
-          alt="Card background"
-          className="z-0"
+          alt="Card background "
+          className="z-0 "
           src={game.img_url}
         />:<Link href="http://localhost:3000/games" className="flex justify-center items-center  h-full cursor-pointer ">
                 <h2 className="  ">{game.title}+</h2>
                 </Link>}
-      
-        {game.title!=='See more'&&  <CardFooter className="flex ">    
+       <div className="absolute inset-0 bg-black/30 pointer-events-none"></div>
+        {game.title!=='See more'&&  <CardFooter className="flex  z-10 ">    
                 { cartContext.cartList.some((gameCart) => gameCart.id === game.id)?   <Button onPress={async()=>{
                          await fetch('http://localhost:3000/api/orders',{
                                 method:'DELETE',
@@ -59,9 +59,6 @@ export function ProductCart({game}:{game:Games}){
                                 },
                                 
                                 body:JSON.stringify({ game }),
-                                        
-                                       
-                                
                         })
                         const newcCart=[...cartContext.cartList,game]
                         cartContext.setCartList(newcCart)
@@ -71,10 +68,7 @@ export function ProductCart({game}:{game:Games}){
 
                         Add to cart
                 </Button> }    
-             
-               
                 <Button as={Link} href={`/games/${game.id}`}  className="m-2" size='sm' variant="flat"  color="primary">
-
                         View Details
                         </Button>
                         <h2>${game.price}</h2>

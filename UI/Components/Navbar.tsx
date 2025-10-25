@@ -6,17 +6,15 @@ import {  useSearchParams,useRouter } from "next/navigation";
 import {  CircleUser, ShoppingCartIcon} from "lucide-react";
 import { useDebouncedCallback } from 'use-debounce';
 import { DrawerComponent } from "./Drawer";
-import { signOut, useSession } from "next-auth/react";
 import { LogOut } from "@/services/logOut";
-export function NavbarComponet(){
-   const { data: session, status } = useSession();
+import { Session } from "next-auth";
+export function NavbarComponet({session}:{session:Session|null}){
   
   const searchParams=useSearchParams()
   const params=new URLSearchParams(searchParams)
   const router=useRouter()
   const {isOpen,onOpen,onOpenChange} =useDisclosure()
-    if (status === "loading") return <p>Loading...</p>;
-  if (!session) return <p>Not logged in</p>;
+ ;
   
   function onHandleSearch(search:string){
     
@@ -49,7 +47,7 @@ export function NavbarComponet(){
                 <Link>About</Link>
         </NavbarItem>
             <NavbarItem>
-                <Link>Dashboard</Link>
+                <Link href="/dashboard">Dashboard</Link>
         </NavbarItem>
     
          

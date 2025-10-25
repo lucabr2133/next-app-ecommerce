@@ -5,58 +5,80 @@ import { ProductCart } from "@/UI/Components/Card";
 import { CarouselGameDetail } from "./Carroulsel";
 import { Card, CardBody, Chip, Button,Image } from "@heroui/react";
 export default function MainContent({game,tags,screenshoots}:{game:Games,tags:tags[],screenshoots:sreenshoots[]}){
-    
-    return <>
-        <section className="m-0 p-0 w-full">
-            <Card className=" m-0 p-0 " style={{backgroundImage:`url(${game.img_url})`,backgroundSize:'cover',backgroundPosition:'center',}}>
-                <CardBody  className="w-1/3 p-0 bg-black/60 ">
-                        <span className="min-h-[910] p-16 h-full flex flex-col  justify-center gap-5">
-                            <section className="gap-5 flex flex-col">
-                          <h2 className="text-5xl text-gray-50 font-bold uppercase">{game.title}</h2>
+    return (
+    <section className="w-full m-0 p-0 text-gray-100">
+      <div
+        className="relative min-h-screen flex items-end bg-cover bg-center transition-all duration-700"
+        style={{
+          backgroundImage: `url(${game.img_url})`,
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent backdrop-blur-[2px]" />
 
-                            </section>
-                  
-                        <h2 className="text-gray-50  font-bold leading-6">
-                        {game.description}
+        <div className="relative z-10 w-full p-16 flex flex-col gap-6 max-w-5xl">
+          <h1 className="text-6xl md:text-7xl font-extrabold uppercase tracking-wide drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+            {game.title}
+          </h1>
 
-                        </h2>
-                                 <span className="mt-4 flex flex-wrap gap-2 uppercase ">
-                            {tags.map(tag=>(
-                            <Chip variant="bordered" color="warning"  size="sm" radius="none"  key={tag.tag_id}>{tag.tag_name}</Chip>
-                        ))} </span>
-                        <Button className="w-1/2  text-center" color="primary" variant="shadow">Buy now</Button>
+          <p className="max-w-3xl text-lg md:text-xl leading-relaxed text-gray-200 drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]">
+            {game.description}
+          </p>
 
-                    </span>
-                  
+          <div className="flex flex-wrap gap-3 uppercase">
+            {tags.map((tag) => (
+              <Chip
+                key={tag.tag_id}
+                variant="bordered"
+                color="warning"
+                size="sm"
+                radius="sm"
+                className="hover:scale-110 transition-transform"
+              >
+                {tag.tag_name}
+              </Chip>
+            ))}
+          </div>
 
+          <Button
+            className="mt-6 w-48 py-6 text-lg font-semibold shadow-lg 
+                       bg-gradient-to-r from-yellow-500 to-orange-600 
+                       hover:from-yellow-400 hover:to-orange-500 
+                       hover:shadow-[0_0_20px_rgba(255,165,0,0.6)] 
+                       transition-all duration-300"
+            color="warning"
+            variant="shadow"
+          >
+            Buy Now
+          </Button>
+        </div>
+      </div>
 
-                </CardBody>
-            
+      <div className="m-8 grid grid-cols-1 md:grid-cols-2 gap-8 place-items-center">
+        <div className="w-full max-w-3xl">
+          <CarouselGameDetail images={screenshoots} />
+        </div>
+
+        <div className="flex flex-wrap justify-center gap-6">
+          {screenshoots.map((screenshot) => (
+            <Card
+              key={screenshot.id}
+              className="w-56 h-36 overflow-hidden rounded-2xl shadow-lg hover:scale-105 hover:shadow-[0_0_25px_rgba(255,255,255,0.15)] transition-all duration-300"
+            >
+              <CardBody className="p-0">
+                <Image
+                  src={screenshot.screenshot_url}
+                  alt="Screenshot"
+                  className="object-cover w-full h-full"
+                  loading="lazy"
+                />
+              </CardBody>
             </Card>
-               <div className="m-4 grid grid-cols-2 grid-rows-[700px] place-items-center" >
-                         <CarouselGameDetail images={screenshoots}></CarouselGameDetail>    
-                         <span className="flex flex-row flex-wrap justify-center  items-center p-2 gap-5 ">
-                            {screenshoots.map(screenshot=>(
-                                <Card key={screenshot.id} className="w-1/3   flex ">
-                                    <CardBody className="">
-                                        <Image  src={screenshot.screenshot_url}></Image>
-                                    </CardBody>
-                                </Card>
-                            ))}
-                         </span>
-                       
-                     
-                    </div>
-                        <span className="flex p-5 bg-black gap-5 justify-baseline">
-                <ProductCart game={game}></ProductCart>
-                <ProductCart game={game}></ProductCart>
+          ))}
+        </div>
+      </div>
 
-                <ProductCart game={game}></ProductCart>
-
-            </span>
-          
-               
-        </section>
-    </>
+      <div className="w-full h-2 bg-gradient-to-r from-yellow-500 to-orange-600" />
+    </section>
+  );
 
 }

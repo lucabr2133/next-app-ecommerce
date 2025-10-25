@@ -1,4 +1,3 @@
-"use server";
 import NextAuth from 'next-auth';
 import { authConfig } from './auth.config';
 import bcrypt from 'bcryptjs'
@@ -10,6 +9,7 @@ export type User = {
   username: string;
   password: string;
   email?: string; // opcional
+  role:'user'|'admin'
 };
  async function getUser(username: string): Promise<User | undefined> {
   try {
@@ -42,6 +42,7 @@ export const { auth, signIn, signOut } = NextAuth({
           name:user.username,
           id:user.id,
           email:user.email,
+          role:user.role
          
          }
         }

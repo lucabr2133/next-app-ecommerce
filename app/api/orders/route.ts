@@ -1,19 +1,43 @@
 import { auth } from "@/auth";
 import { sql } from "@/supabase";
-import { Games } from "@/types/database";
-export async function GET(request:Request) {
-    const session=await auth()
+export async function GET(request: Request) {
+  try {
+    const session = await auth();
     
-if (!session?.user?.id) {
-  throw new Error("User not authenticated");
-}
-    const [userCart]= await sql `Select * from carts where user_id=${session?.user?.id}`
-    if(!userCart){
-        await sql `insert into carts (user_id) values(${session.user.id})`
+    if (!session?.user?.id) {
+      return new Response(JSON.stringify({ error: "User not authenticated" }), {
+        status: 401,
+      });
     }
-    const cartList=await sql `select games.* from games inner join carts_games cg on games.id=cg.game_id  where cg.cart_id=${userCart.id}`
-   return Response.json(cartList)
+
+    let [userCart] = await sql`
+      SELECT * FROM carts WHERE user_id = ${session.user.id}
+    `;
+
+    if (!userCart) {
+      [userCart] = await sql`
+        INSERT INTO carts (user_id)
+        VALUES (${session.user.id})
+        RETURNING *
+      `;
+    }
+
+    const cartList = await sql`
+      SELECT g.*
+      FROM games g
+      INNER JOIN carts_games cg ON g.id = cg.game_id
+      WHERE cg.cart_id = ${userCart.id}
+    `;
+
+    return Response.json(cartList);
+  } catch (error) {
+    console.error("Error fetching cart:", error);
+    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+      status: 500,
+    });
+  }
 }
+
 export async function DELETE(request:Request) {
       const session=await auth()
 if (!session?.user?.id) {

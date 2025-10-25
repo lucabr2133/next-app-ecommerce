@@ -11,7 +11,7 @@ import { Card, CardBody, Button, CardFooter } from "@heroui/react";
 export  function Carousel({ games }: {games:Games[]}) {
   const images = games.map((game) => game.img_url);
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  const [hovered, setHovered] = useState(false);
   const next = () => {
     if (currentIndex < images.length - 1) {
       setCurrentIndex(currentIndex + 1);
@@ -25,12 +25,28 @@ export  function Carousel({ games }: {games:Games[]}) {
   };
 
   return (
-    <Card
-      className="col-start-1 col-end-5   bg-center"
-      style={{ backgroundImage: `url(${images[currentIndex]})`,backgroundSize:"100%" }}
+  <Card
+      className="col-start-1 col-end-5 relative flex items-end bg-cover bg-center"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
-      <CardBody className="flex justify-between items-center flex-row  ">
-        <Button variant="ghost"
+      {/* Imagen de fondo con blur controlado por estado */}
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: `url(${images[currentIndex]})`,
+          filter: hovered ? "blur(0px)" : "blur(1px)",
+          transition: "filter 0.7s ease",
+        }}
+      ></div>
+
+      {/* Overlay oscuro */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none" />
+
+      {/* Contenido */}
+      <CardBody className="flex justify-between items-center flex-row relative z-10">
+        <Button
+          variant="ghost"
           color="primary"
           isIconOnly
           isDisabled={currentIndex === 0}
@@ -40,7 +56,7 @@ export  function Carousel({ games }: {games:Games[]}) {
         </Button>
 
         <Button
-        variant="ghost"
+          variant="ghost"
           color="primary"
           isIconOnly
           isDisabled={currentIndex === images.length - 1}
@@ -50,20 +66,18 @@ export  function Carousel({ games }: {games:Games[]}) {
         </Button>
       </CardBody>
 
-      <CardFooter className="bg-black/40 text-white items-start  flex flex-col  h-60">
-      <h2 className=" uppercase font-bold text-4xl mb-10">
-        {games[currentIndex].title}
-
-      </h2>
-      <p className="w-1/2">
-        {games[currentIndex].description.slice(0,300)+'...'}
-      </p>
-      <span className="mt-5">
-        <Button variant="solid" color="primary">Buy now</Button>
-        
-
-      </span>
-       
+      <CardFooter className="bg-black/20 p-5  text-white items-start flex flex-col z-10 transition-all  " style={{opacity:hovered?'1':'0',height:hovered?'300px':'0px',transition:'all 0.7s ease'}}>
+        <h2 className="text-4xl md:text-4xl font-extrabold uppercase tracking-wide drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+          {games[currentIndex].title}
+        </h2>
+        <p className="w-1/2 max-w-3xl text-lg md:text-xl leading-relaxed text-gray-200 drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]">
+          {games[currentIndex].description.slice(0, 300) + "..."}
+        </p>
+        <span className="mt-5 pointer-events-auto">
+          <Button variant="solid" color="primary">
+            Buy now
+          </Button>
+        </span>
       </CardFooter>
     </Card>
   );

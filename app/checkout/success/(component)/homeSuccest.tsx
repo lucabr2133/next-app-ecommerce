@@ -40,7 +40,7 @@ export  function HomeSuccess({ orderData }: { orderData: any[] }) {
                 <Divider></Divider>
                 <CardBody className="flex gap-5">
                     {orderData.map(order=>(
-                        <div className="bg-gray-900  p-2 rounded-2xl flex justify-between items-center">
+                        <div key={order.id} className="bg-gray-900  p-2 rounded-2xl flex justify-between items-center">
                          <div className="">
                             <Image className="w-32" src={`${order.img_url}`}></Image>
                              <div>
