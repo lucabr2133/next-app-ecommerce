@@ -25,20 +25,19 @@ export const authConfig ={
         authorized({auth,request:{nextUrl}}){
             const isLogged=!!auth?.user
             const path=nextUrl.pathname
-            console.log(auth?.user);
-            
-            if(path==='/'){
+               
+            if(path==='/dashboard' && auth?.user?.role!=='admin'){
+                return Response.redirect(new URL('/',nextUrl))
+
+            }
+            else if(path==='/'){
                 if(isLogged) return true
                 return false
             }
             else if(isLogged && path==='/login'){
                 return Response.redirect(new URL('/',nextUrl))
             }
-            
-            else if(path==='/dashboard' && auth?.user.role==='user'){
-                              return Response.redirect(new URL('/',nextUrl))
-
-            }
+         
             return true
         }
     },

@@ -6,7 +6,8 @@ import { ProductCart } from "./Card";
 export function DrawerComponent({isOpen,onOpenChange}:{isOpen:boolean,onOpenChange:()=>void}){
     
     const cartContext=useContext(CartContext)
-const totalPrice = cartContext.cartList.reduce(
+    
+const totalPrice =cartContext.cartList.length>0 && cartContext.cartList.reduce(
   (acc, game) => acc + Number(game.price),
   0
 );
