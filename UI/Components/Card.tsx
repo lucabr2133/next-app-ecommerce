@@ -1,7 +1,9 @@
 import { Games } from "@/types/database";
-import { Button, Card, CardFooter, CardHeader, Link, Image, Spinner } from "@heroui/react";
+import { Button, Card, CardFooter, CardHeader, Link, Image, Spinner, DropdownTrigger, Dropdown, DropdownMenu, DropdownItem } from "@heroui/react";
 import { CartContext } from "@/app/contex/contex";
 import { useContext, useState } from "react";
+import { usePathname } from "next/navigation";
+import { CrossIcon, DeleteIcon, Edit2Icon, EllipsisIcon, EllipsisVertical, OptionIcon, Pencil, XIcon } from "lucide-react";
 
 export function ShopIcon() {
   return (
@@ -30,11 +32,12 @@ export function ShopIcon() {
 }
 
 export function ProductCart({ game }: { game: Games }) {
+  const path=usePathname()
   const { cartList, setCartList } = useContext(CartContext);
   const [loading, setLoading] = useState(false);
   const isInCart = cartList.some((g) => g.id === game.id);
   const isPlaceholder = game.title === "See more";
-
+const isInAdminPage=path==='/dashboard/games'
   const handleAddToCart = async () => {
     setLoading(true);
     await fetch("http://localhost:3000/api/orders", {
@@ -91,7 +94,7 @@ export function ProductCart({ game }: { game: Games }) {
         )}
       </div>
 
-      {!isPlaceholder && (
+      {!isPlaceholder && !isInAdminPage && (
         <CardFooter className="absolute bottom-0 left-0 right-0 z-20 bg-black/60 backdrop-blur-md flex justify-between items-center px-4 py-3">
           <div className="flex gap-2">
             {loading ? (
@@ -136,6 +139,16 @@ export function ProductCart({ game }: { game: Games }) {
           </h2>
         </CardFooter>
       )}
+      {isInAdminPage&&<Dropdown>
+        <DropdownTrigger><Button isIconOnly color="default"  variant="flat" className="absolute top-0 right-0"><EllipsisVertical></EllipsisVertical></Button></DropdownTrigger>
+     <DropdownMenu aria-label="Static Actions">
+   
+        <DropdownItem startContent={<Pencil></Pencil>} key="edit" color="warning" variant="flat">Edit Game</DropdownItem>
+        <DropdownItem startContent={<XIcon></XIcon>} key="delete" className="text-danger"  variant='flat' color="danger">
+          Delete Game
+        </DropdownItem>
+      </DropdownMenu>
+      </Dropdown>}
     </Card>
   );
 }

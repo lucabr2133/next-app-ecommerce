@@ -5,7 +5,7 @@ import { Edit } from "lucide-react";
 import { it } from "node:test";
 import { useCallback } from "react";
 export default function usersTable({users}:{users:User[]}){
-    const columns=Object.keys(users[0]).filter(value=>value!='id' && value!='created_at' && value!='img_url')
+    const columns=Object.keys(users[0]).filter(value=>value!='id' && value!='created_at' && value!='img_url' && value!='is_active')
     const renderCell=useCallback((user:User,columnKey:React.Key)=>{
           const cellValue = user[columnKey as keyof User];
           switch(columnKey){
@@ -42,12 +42,21 @@ export default function usersTable({users}:{users:User[]}){
                               {user.role=='admin'?'user':'admin'}
                         </SelectItem>
                     </Select>
-                    <Button color="danger" variant="flat" onPress={async()=>{
+                    <Button color={user.is_active?'danger':'success'} variant="flat" onPress={async()=>{
+                      console.log('a');
+                      
                         await fetch(`http://localhost:3000/api/users/${user.id}`,{
-                            method:'DELETE'
+                            method:'PUT',
+                            headers:{
+                              'content-type':'Application/json'
+                            },
+                            body:JSON.stringify({
+                              isActive:user.is_active==true?false:true
+                            })
                         })
                     }}>
-                        Delete
+                        {user.is_active==true?'DISABLE':'ENABLE'}
+
                     </Button>
                 </div>
                 

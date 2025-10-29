@@ -9,7 +9,9 @@ export type User = {
   username: string;
   password: string;
   email?: string; // opcional
-  role:'user'|'admin'
+  role:'user'|'admin',
+  is_active:boolean,
+  img_url:string
 };
  async function getUser(username: string): Promise<User | undefined> {
   try {

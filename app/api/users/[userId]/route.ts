@@ -10,10 +10,12 @@ export async function  PATCH(request:Request,{params}:{params:{userId:string}}){
         message:'user role updated'
     },{status:201})
 }
-export async function DELETE(request:Request,{params}:{params:{userId:string}}){
+export async function PUT(request:Request,{params}:{params:{userId:string}}){
+    
     const {userId}=await params
-    await sql `DELETE FROM users where id=${userId} ON CASCADE`
+    const {isActive}=await request.json()
+    await sql `update users set is_active=${isActive} where id=${userId}`
     return Response.json({
-        message:'user delete succesfully'
+        message:'user update succesfully'
     },{status:200})
 }
