@@ -14,14 +14,21 @@ export default function MainGamesAdmin({games}:{games:Games[]}){
     },[currentPage])
     const {isOpen,onOpenChange,onOpen}=useDisclosure()
     const values=Object.keys((games[0])).filter((key)=>key!= 'id' && key!='created_at' &&key!='img_url' && key!='trailer_url')
-    const [file,setFile]=useState<File|null>(null)
+    const [errors,setErrors]=useState({})
     async function onHandleCreateGame(e:React.FormEvent<HTMLFormElement>){
         e.preventDefault()
         const formdata=new FormData(e.currentTarget)
-        await fetch('http://localhost:3000/api/games',{
+       const res= await fetch('http://localhost:3000/api/games',{
             method:'POST',
             body:formdata
         })
+        const data=await res.json()
+
+        if(!data?.success){
+            console.log(data.errors.fieldErrors);
+            
+            setErrors(data.errors.fieldErrors)
+        }
 
     }
     return <main className="min-h-screen w-full p-12 flex flex-col items-center">
@@ -33,12 +40,9 @@ export default function MainGamesAdmin({games}:{games:Games[]}){
                 Add a game
             </ModalHeader>
             <ModalBody>
-                 <Form className="grid grid-cols-2 gap-5" onSubmit={onHandleCreateGame}>
+                 <Form validationErrors={errors}   className="grid grid-cols-2 gap-5" onSubmit={onHandleCreateGame}>
                     {values.map(value=>(
-                        <Input   onChange={(e) => {
-          const f = e.target.files?.[0];
-          setFile(f || null);
-        }} type={value=='release_at' ||value=='updated_at'?'date':'text'} placeholder={`Enter your: ${value}`} isRequired label={`Enter your: ${value}`} name={value} ></Input>
+                        <Input  type={value=='release_at' ||value=='updated_at'?'date':'text'} placeholder={`${value=='company_id'?"company name":value}: `} isRequired label={`Enter  ${value=='company_id'?"company name":value}:`} name={value=='company_id'?"company_name":value} ></Input>
                     ))}
                     <Input type="file" className="col-start-1 col-end-3" name="file"></Input>
                     <Button type="submit" variant="flat" color="primary" >Create</Button>
