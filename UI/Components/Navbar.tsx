@@ -40,12 +40,7 @@ export function NavbarComponet({session}:{session:Session|null}){
         </NavbarItem>
       </NavbarContent>  
       <NavbarContent  className="w-full">
-        <NavbarItem>
-                <Link>Home page</Link>
-        </NavbarItem>
-            <NavbarItem>
-                <Link>About</Link>
-        </NavbarItem>
+    
             <NavbarItem>
                 <Link href="/dashboard">Dashboard</Link>
         </NavbarItem>

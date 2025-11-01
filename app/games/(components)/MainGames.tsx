@@ -15,13 +15,11 @@ export function MainGames({data,genres}:{data:Games[],genres:Genres[]}){
   const [index, setIndex] = useState(0);
 const [dataGames, setDataGames] = useState(data);
 
-// Resetear la página cuando cambia el dataset
 useEffect(() => {
   setIndex(0);
   setDataGames(data)
 }, [data]);
 
-// Dividir los juegos en páginas de 9
 const dataSlice = useMemo(() => {
   let start = 0;
   let end = 9;
@@ -68,12 +66,8 @@ function setPage(number:number){
         <p className="text-4xl mb-6 uppercase ">Games</p>
         <div>
         <p className="text-2xl   "></p>
- 
-  
 
         </div>
-
-
         </div>
         <div className="grid grid-cols-5 gap-5">
             <div className="col-start-1 col-end-5 grid grid-cols-3 gap-5 place-items-end">

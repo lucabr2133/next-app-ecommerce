@@ -16,6 +16,24 @@ import { Games } from "@/types/database";
 //     return Response.json({
 //     })
 // }
+export async function GET(request:Request) {
+     const session=await auth()
+     
+    if(session?.user?.role !=='admin'){
+         throw new Error("User not authenticated");
+    }
+  try {
+   const orders= await sql `select orders.* ,username from users  inner join orders on orders.user_id=users.id`
+    return Response.json(orders,{status:200})
+  } catch (error) {
+    console.log(error);
+    
+    return Response.json({error},{status:400})
+    
+  }
+   
+    
+}
 export async  function POST(request:Request){
     const body= await request.json()
     const {games,status}:{games:Games[],userId:string ,status:string  }=body
