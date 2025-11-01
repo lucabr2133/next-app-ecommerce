@@ -5,6 +5,7 @@ import { inter } from "@/fonts";
 import { CartProvider } from "./contex/cartProvider";
 import {SessionProvider} from 'next-auth/react'
 import { auth } from "@/auth";
+import { ToastProvider } from "@heroui/react";
 
 export default  async function RootLayout({ children }: { children: React.ReactNode }) {
     const session = await auth(); 
@@ -27,6 +28,7 @@ export default  async function RootLayout({ children }: { children: React.ReactN
           <NavbarComponet session={session} />
           <div className="p-0">{children}</div>
             </CartProvider>
+
         </Providers>
 
       </body>

@@ -31,6 +31,7 @@ export default function MainGamesAdmin({games}:{games:Games[]}){
         }
 
     }
+  
     return <main className="min-h-screen w-full p-12 flex flex-col items-center">
         <Modal isOpen={isOpen} onOpenChange={(onOpenChange)} >
             <ModalContent className="min-w-1/3">

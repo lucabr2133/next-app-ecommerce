@@ -1,9 +1,10 @@
 import { Games } from "@/types/database";
-import { Button, Card, CardFooter, CardHeader, Link, Image, Spinner, DropdownTrigger, Dropdown, DropdownMenu, DropdownItem } from "@heroui/react";
+import { Button, Card, CardFooter, CardHeader, Link, Image, Spinner, DropdownTrigger, Dropdown, DropdownMenu, DropdownItem, addToast, useDisclosure } from "@heroui/react";
 import { CartContext } from "@/app/contex/contex";
 import { useContext, useState } from "react";
 import { usePathname } from "next/navigation";
 import { CrossIcon, DeleteIcon, Edit2Icon, EllipsisIcon, EllipsisVertical, OptionIcon, Pencil, XIcon } from "lucide-react";
+import { UpdateModal } from "@/app/dashboard/games/(components)/updateModal";
 
 export function ShopIcon() {
   return (
@@ -33,6 +34,8 @@ export function ShopIcon() {
 
 export function ProductCart({ game }: { game: Games }) {
   const path=usePathname()
+    const {isOpen,onOpenChange,onOpen}  =useDisclosure()
+
   const { cartList, setCartList } = useContext(CartContext);
   const [loading, setLoading] = useState(false);
   const isInCart = cartList.some((g) => g.id === game.id);
@@ -61,6 +64,7 @@ const isInAdminPage=path==='/dashboard/games'
   };
 
   return (
+    <>
     <Card
       className={`relative my-5 mx-2 w-full h-[340px] border border-amber-500/40 rounded-2xl overflow-hidden 
       shadow-[0_0_20px_rgba(255,200,50,0.15)] transition-all duration-500 hover:scale-[1.02] 
@@ -143,12 +147,26 @@ const isInAdminPage=path==='/dashboard/games'
         <DropdownTrigger><Button isIconOnly color="default"  variant="flat" className="absolute top-0 right-0"><EllipsisVertical></EllipsisVertical></Button></DropdownTrigger>
      <DropdownMenu aria-label="Static Actions">
    
-        <DropdownItem startContent={<Pencil></Pencil>} key="edit" color="warning" variant="flat">Edit Game</DropdownItem>
-        <DropdownItem startContent={<XIcon></XIcon>} key="delete" className="text-danger"  variant='flat' color="danger">
+        <DropdownItem onPress={onOpen} startContent={<Pencil></Pencil>} key="edit" color="warning" variant="flat" >Edit Game</DropdownItem>
+        <DropdownItem onPress={async()=>{
+          const res=await fetch(`http://localhost:3000/api/games/${game.id}`,{
+            method:'DELETE'
+          })
+          const data= await res.json()
+          addToast({
+            title:data?.message||data?.error,
+            color:data?.message?'success':'danger',
+            variant:'flat'
+          })  
+         
+        }} startContent={<XIcon></XIcon>} key="delete" className="text-danger"  variant='flat' color="danger">
           Delete Game
         </DropdownItem>
       </DropdownMenu>
       </Dropdown>}
     </Card>
+    <UpdateModal game={game} isOpen={isOpen} onOpenChange={onOpenChange}></UpdateModal>
+    </>
+
   );
 }

@@ -10,8 +10,13 @@ import z from "zod"
   updated_at:z.coerce.date(),
   metacritic:z.coerce.number()
  })
+ const updateFormDataSchema=formDataSchema.omit({company_name:true,release_at:true})
  export function validateSchema(formData:FormData){
       const dataForm = Object.fromEntries(formData.entries());
  return formDataSchema.safeParse(dataForm)
 
+ }
+ export function validateUpdateFormSchema(formData:FormData){
+     const updateDataForm=Object.fromEntries(formData.entries())
+     return updateFormDataSchema.safeParse(updateDataForm)
  }

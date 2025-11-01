@@ -29,7 +29,7 @@ export  function CarouselGameDetail({ images }: {images:sreenshoots[]}) {
       className=" flex items-center justify-center"
     >
       <CardBody className=" ">
-        <Image   className="object-contain" src={`${images[currentIndex].screenshot_url}`}></Image>
+        <Image   className="object-contain" src={`${images[currentIndex]?.screenshot_url}`}></Image>
         <Button className="absolute z-20 left-0 top-1/2" variant="ghost"
           color="primary"
           isIconOnly
