@@ -12,10 +12,8 @@ export default async function PageOrders(){
         }
     })
     const dataResponse= await ordersResponse.json()
-    console.log(dataResponse);
     
     return <>
-        <h2>Orders Page</h2>
         <MainOrders orders={dataResponse}>
 
         </MainOrders>
