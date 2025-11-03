@@ -3,7 +3,7 @@ import { loadStripe } from "@stripe/stripe-js";
 
 // inicializa Stripe con tu clave pública
 const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+  process.env.STRIPE_PUBLIC_KEY!
 );
 
 export default function CheckoutButton({ games }: { games: any[] }) {
