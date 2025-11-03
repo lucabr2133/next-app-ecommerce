@@ -6,7 +6,7 @@ export default async function PageOrders(){
 
       const cookieStore =await cookies();
     
-    const ordersResponse= await fetch('http://localhost:3000/api/checkout',{
+    const ordersResponse= await fetch('api/checkout',{
         headers:{
             Cookie: cookieStore.toString()
         }

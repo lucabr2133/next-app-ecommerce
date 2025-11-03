@@ -3,6 +3,7 @@ import { CartContext } from "@/app/contex/contex";
 import { Button, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, Link } from "@heroui/react";
 import { useContext } from "react";
 import { ProductCart } from "./Card";
+import CheckoutButton from "@/app/checkout/(components)/CheckoutButton";
 export function DrawerComponent({isOpen,onOpenChange}:{isOpen:boolean,onOpenChange:()=>void}){
     
     const cartContext=useContext(CartContext)
@@ -35,9 +36,7 @@ const totalPrice =cartContext.cartList.length>0 && cartContext.cartList.reduce(
                 <Button color="danger" variant="light" onPress={onClose}>
                   Close
                 </Button>
-                <Button color="primary" as={Link} href="/checkout">
-                  Buy now
-                </Button>
+                <CheckoutButton games={cartContext.cartList}/>
               </DrawerFooter>
             </>
           )}

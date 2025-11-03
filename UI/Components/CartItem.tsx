@@ -33,7 +33,7 @@ export function ShopCart({game}:{game:Games}){
                         Delete to cart
 
                 </Button>  : <Button onPress={async()=>{
-                        await fetch('http://localhost:3000/api/orders',{
+                        await fetch('/api/orders',{
                                 method:'POST',
                                 headers:{
                                         'Content-Type': 'application/json',

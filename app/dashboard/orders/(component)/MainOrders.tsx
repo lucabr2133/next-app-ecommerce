@@ -26,9 +26,8 @@ export function MainOrders({orders}:{orders:postgres.Row[]}){
                     <Button color="primary" variant="flat" onPress={async()=>{
                         setCurrentOrder(order)
                         onOpen()
-                        const gamesOrder= await fetch(`http://localhost:3000/api/checkout/success?orderId=${order?.id}`)
+                        const gamesOrder= await fetch(`api/checkout/success?orderId=${order?.id}`)
                         const dataGames= await gamesOrder.json()
-                        console.log(dataGames);
                         
                         setCurrentGames(dataGames)
                     }}>View Details</Button>

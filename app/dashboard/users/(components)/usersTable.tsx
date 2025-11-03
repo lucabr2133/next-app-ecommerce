@@ -24,7 +24,7 @@ export default function usersTable({users}:{users:User[]}){
                 return <div className="flex gap-5 w-full">
                     <Select aria-label="Select role" defaultSelectedKeys={[user.role]} className="w-full" onSelectionChange={async(key)=>{
                         const [selectedKey]=Array.from(key)
-                        await fetch(`http://localhost:3000/api/users/${user.id}`,{
+                        await fetch(`api/users/${user.id}`,{
                             method:'PATCH',
                             headers:{
                                 'Content-type':'Application/json'

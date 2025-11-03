@@ -5,7 +5,7 @@ import MainContent from "../(components)/MainContent"
 export default async  function Page({ params }: { params: Promise<{ idGames: string }> }) {
     const {idGames}= await params
     
-    const game= await fetch(`http://localhost:3000/api/games/${idGames}`)
+    const game= await fetch(`${process.env.NEXT_LOCAL_URL}/api/games/${idGames}`)
     
     const data:gameDetailResponse=await game.json()
 

@@ -43,7 +43,7 @@ export function ProductCart({ game }: { game: Games }) {
 const isInAdminPage=path==='/dashboard/games'
   const handleAddToCart = async () => {
     setLoading(true);
-    await fetch("http://localhost:3000/api/orders", {
+    await fetch("/api/orders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ game }),
@@ -54,7 +54,7 @@ const isInAdminPage=path==='/dashboard/games'
 
   const handleRemoveFromCart = async () => {
     setLoading(true);
-    await fetch("http://localhost:3000/api/orders", {
+    await fetch("/api/orders", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ gameId: game.id }),
@@ -149,7 +149,7 @@ const isInAdminPage=path==='/dashboard/games'
    
         <DropdownItem onPress={onOpen} startContent={<Pencil></Pencil>} key="edit" color="warning" variant="flat" >Edit Game</DropdownItem>
         <DropdownItem onPress={async()=>{
-          const res=await fetch(`http://localhost:3000/api/games/${game.id}`,{
+          const res=await fetch(`/api/games/${game.id}`,{
             method:'DELETE'
           })
           const data= await res.json()

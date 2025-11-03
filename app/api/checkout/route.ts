@@ -1,21 +1,11 @@
 import { auth } from "@/auth";
+import { stripe } from "@/services/stripe/config";
 import { sql } from "@/supabase"
 import { Games } from "@/types/database";
- function generateKey(){
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let key=''
-        const keyLength = 15; 
-    for (let i = 0; i < keyLength; i++) {
-        const element = chars[Math.floor(Math.random() * chars.length)];
-        key+=element
-    }
-    return key
- }
-// export  function GET(request:Request){
-//     const order=   ''  
-//     return Response.json({
-//     })
-// }
+import { error } from "console";
+import { NextResponse } from "next/server";
+
+
 export async function GET(request:Request) {
      const session=await auth()
      
@@ -34,23 +24,59 @@ export async function GET(request:Request) {
    
     
 }
-export async  function POST(request:Request){
-    const body= await request.json()
-    const {games,status}:{games:Games[],userId:string ,status:string  }=body
+export async function POST(request:Request) {
+    const {games}=await request.json()
     const session=await auth()
-    if(!session?.user?.id){
-         throw new Error("User not authenticated");
-    }
-    const order=await sql `insert into orders (user_id,status) values (${session?.user?.id},${status}) returning id `
-    for (const game of games) {
-        const key=generateKey()
+  if(!session?.user?.id){
+    
+    return Response.json({error:'user not authenticathed'},{status:401})
+  }
+   const order = await sql`
+    insert into orders (user_id, status)
+    values (${session.user.id}, 'pending')
+    returning id
+  `;
+     for (const game of games) {
          await sql `insert into order_items (game_id,order_id,code_key,quantity) values(
-            ${game.id},${order[0].id},${key},1
+            ${game.id},${order[0].id},'',1
          )`
     }
-    
-    return new Response(JSON.stringify({
-  orderId: order[0].id,
-}), { status: 200 })
+  try
+  {
+const lineItems = games.map((game:Games) => ({
+  price_data: {
+    currency: "usd",
+    unit_amount: Math.round(game.price * 100), // precio en centavos
+    product_data: {
+      
+      name: game.title,
+      description: game.description || "",
+   images: game.img_url
+        ? [game.img_url] // ✅ Debe ser un array de URLs absolutas
+        : [],    
+    },
+  },
+  quantity: 1,
+}));
+
+  // 3️⃣ Crear sesión en Stripe
+  const stripeSession = await stripe.checkout.sessions.create({
+    mode: "payment",
+    payment_method_types: ["card"],
+    line_items: lineItems,
+    success_url: `http://localhost:3000/checkout/success?orderId=${order[0].id}`,
+    cancel_url: `http://localhost:3000/checkout/cancel`,
+    metadata: {
+      orderId: order[0].id.toString(),
+      userId: session.user.id,
+    },
+  });
+    return Response.json({ sessionId: stripeSession.id ,url:stripeSession.url});
+
+  }catch(e){
+    console.log(e,'a');
+    return Response.json({ error }, { status: 400 });
+  }
+  
 }
 
