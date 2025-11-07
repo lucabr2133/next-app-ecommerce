@@ -1,12 +1,14 @@
 import { validateUpdateFormSchema } from "@/app/schemas";
+import { auth } from "@/auth";
 import { sql } from "@/supabase"
 import { createClient } from "@supabase/supabase-js";
 import { error } from "console";
 import z, { success } from "zod";
 const supabase=createClient(process.env.SUPABASE_URL as string,process.env.SUPABASE_SERVICE_ROLE_KEY as string)
 
-export  async function GET(request:Request,{params}:{params:{idGames:string}}){
-    
+export  async function GET(request:Request,{params}:{params:Promise<{idGames:string}>}){
+    const session=await auth()
+    if(!session?.user)return Response.json({error:'Unauthorized'},{status:403})
     const {idGames}= await params
     
     try{
@@ -21,36 +23,42 @@ export  async function GET(request:Request,{params}:{params:{idGames:string}}){
     }catch(e){
         console.error(e);
         
-        throw new Error('Something get wrong ')
+        Response.json({error:'A fail occurred getting the game'},{status:400})
     }
     
 }
 export async function DELETE(
   request: Request,
-  { params }: { params: { idGames: string } }
+  { params }: { params: Promise<{ idGames: string }> }
 ) {
   const { idGames } =await params;
-
+ const session=await auth()
+    if(!session?.user)return Response.json({error:'Unauthorized'},{status:403})
   if (!idGames) {
     return Response.json({ error: "No idGame provided" }, { status: 400 });
   }
 
   try {
-    await sql`Delete  FROM games WHERE id = ${idGames}`;
+    const [game]=await sql`Delete  FROM games WHERE id = ${idGames} RETURNING *`;
     
-    return Response.json({ message: "Game deleted successfully" }, { status: 200 });
+    return Response.json({ message: "Game deleted successfully" ,game}, { status: 200 });
   } catch (error) {
     console.error(error);
     return Response.json({ error: "Something went wrong" }, { status: 500 });
   }
 }
-export async function PATCH(request:Request,{params}:{params:{idGames:string}}) {
+export async function PATCH(request:Request,{params}:{params:Promise<{idGames:string}>}) {
+   const session=await auth()
+    if(!session?.user)return Response.json({error:'Unauthorized'},{status:403})
     const {idGames}=await params
+      if (!idGames) {
+    return Response.json({ error: "No idGame provided" }, { status: 400 });
+  }
+
     const formData=await request.formData()
     const file=formData.get('file') as File
     if(!file)return Response.json({error:'File must be provided'},{status:400})
     const validFormSchema=validateUpdateFormSchema(formData)
-console.log(validFormSchema);
 
     if(!validFormSchema.success){
         const flatterSchema=z.flattenError(validFormSchema.error)
@@ -63,13 +71,13 @@ console.log(validFormSchema);
         const {data,error}=await supabase .storage.from('games').upload(filePath,file)
         if(error) throw error
         const {data:publicUrl}= supabase.storage.from('games').getPublicUrl(filePath)
-        await sql `UPDATE games SET title=${validateData.title} , stock=${validateData.stock} 
+        const [game]=await sql `UPDATE games SET title=${validateData.title} , stock=${validateData.stock} 
         ,description=${validateData.description} ,metacritic=${validateData.metacritic} ,
-       updated_at= ${validateData.updated_at},price= ${validateData.price},img_url=${publicUrl.publicUrl} where id=${idGames}`
-       return Response.json({message:"Game update Succesfully",success:true},{status:201}) 
+       updated_at= ${validateData.updated_at},price= ${validateData.price},img_url=${publicUrl.publicUrl} where id=${idGames} returning *`
+       return Response.json({message:"Game update Succesfully",success:true,game},{status:201}) 
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
         
         return Response.json({error:'Failed to update the game',success:false},{status:400})
     }

@@ -1,8 +1,8 @@
 "use client"
-import { Table, TableBody, TableColumn,TableCell,TableHeader,TableRow, Divider, Card, CardHeader, CardBody, CardFooter, Button, Chip, Modal, ModalContent, ModalBody, useDisclosure, ModalHeader, Form, Image, ModalFooter } from "@heroui/react";
+import { Table, TableBody, TableColumn,TableCell,TableHeader,TableRow, Divider, Card, CardHeader, CardBody, CardFooter, Button, Chip, Modal, ModalContent, ModalBody, useDisclosure, ModalHeader, Form, Image, ModalFooter, Spinner } from "@heroui/react";
 import { Car } from "lucide-react";
 import postgres from "postgres";
-import { useCallback, useState } from "react";
+import { Suspense, useCallback, useState } from "react";
 
 export function MainOrders({orders}:{orders:postgres.Row[]}){
     const {isOpen,onOpen,onOpenChange} =useDisclosure()
@@ -40,6 +40,8 @@ export function MainOrders({orders}:{orders:postgres.Row[]}){
     keys.push('action')
 
 return (
+  <Suspense fallback={<Spinner></Spinner>}>
+
   <main className="min-h-screen w-full flex flex-col px-10 py-8 gap-8 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
     {/* Header */}
     <div className="flex items-center justify-between">
@@ -164,10 +166,13 @@ return (
     </Modal>
 
   </main>
+  </Suspense>
+
 );
 
 }
 //        <div className="grid grid-cols-3 gap-5">
+  
 //  {orders.map(order=>{
 //         return <Card key={order.id}>
 //             <CardHeader className="flex justify-between ">

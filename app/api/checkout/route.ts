@@ -2,8 +2,6 @@ import { auth } from "@/auth";
 import { stripe } from "@/services/stripe/config";
 import { sql } from "@/supabase"
 import { Games } from "@/types/database";
-import { error } from "console";
-import { NextResponse } from "next/server";
 
 
 export async function GET(request:Request) {
@@ -31,7 +29,10 @@ export async function POST(request:Request) {
     
     return Response.json({error:'user not authenticathed'},{status:401})
   }
-   const order = await sql`
+ 
+  try
+  {
+      const order = await sql`
     insert into orders (user_id, status)
     values (${session.user.id}, 'pending')
     returning id
@@ -41,8 +42,6 @@ export async function POST(request:Request) {
             ${game.id},${order[0].id},'',1
          )`
     }
-  try
-  {
 const lineItems = games.map((game:Games) => ({
   price_data: {
     currency: "usd",
@@ -59,7 +58,6 @@ const lineItems = games.map((game:Games) => ({
   quantity: 1,
 }));
 
-  // 3️⃣ Crear sesión en Stripe
   const stripeSession = await stripe.checkout.sessions.create({
     mode: "payment",
     payment_method_types: ["card"],
@@ -74,8 +72,8 @@ const lineItems = games.map((game:Games) => ({
     return Response.json({ sessionId: stripeSession.id ,url:stripeSession.url});
 
   }catch(e){
-    console.log(e,'a');
-    return Response.json({ error }, { status: 400 });
+    console.error(e);
+    return Response.json({ e }, { status: 400 });
   }
   
 }

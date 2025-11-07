@@ -1,4 +1,5 @@
 import { validateSchema } from "@/app/schemas";
+import { auth } from "@/auth";
 import { sql } from "@/supabase";
 import { createClient } from '@supabase/supabase-js'
 import {z} from 'zod'
@@ -10,19 +11,16 @@ export async function GET(request: Request) {
   const quantity = url.searchParams.get("quantity");
 const genre= url.searchParams.get('genre')
 const search= url.searchParams.get('search')
-  // Validar columna de orden
   const validOrders = ["release_at", "rating", "price"];
   if (!validOrders.includes(order)) {
     return new Response(JSON.stringify({ error: "Invalid order parameter" }), { status: 400 });
   }
 
-  // Construir la query base
   let query = sql`
     SELECT * FROM games
     ORDER BY ${sql(order)} DESC
   `;
 
-  // Agregar el límite si corresponde
   if (quantity && quantity !== "all" && Number(quantity) > 0) {
     query = sql`
       SELECT DISTINCT * FROM games
@@ -50,7 +48,6 @@ if (search&&search !== 'undefined' ) {
   `;
 }
 if(search && search !== 'undefined'&&genre && genre!='undefined'){
-  console.log(search,genre);
   
   query = sql`
     SELECT DISTINCT g.*
@@ -67,6 +64,8 @@ if(search && search !== 'undefined'&&genre && genre!='undefined'){
   return Response.json(data);
 }
 export async function POST(request:Request) {
+   const session=await auth()
+      if(!session?.user)return Response.json({error:'Unauthorized'},{status:403})
   const formdata=await request.formData()
   const file = formdata.get("file") as File ;
         if (!file) {
@@ -94,19 +93,21 @@ export async function POST(request:Request) {
        company = result[0];
 }
       const { data: publicUrl } = supabase.storage.from("games").getPublicUrl(filePath);
-      await sql`insert into games (company_id,title,description,price,release_at,stock,updated_at,metacritic,img_url) values (
+     const game= await sql`insert into games (company_id,title,description,price,release_at,stock,updated_at,metacritic,img_url) values (
               ${company.id},${validateData.title},${validateData.description},
               ${(validateData.price)},${new Date(validateData.release_at)},${validateData.stock},${new Date(validateData.updated_at)},
               ${(validateData.metacritic)},${publicUrl.publicUrl }
-           )`
+           ) RETURNING *`
+           
       return Response.json(
       {
       message:"game created succesfully",
-      url:data?.path
-      })
+      url:data?.path,
+      game:game[0]
+      },{status:200})
       } catch (error) {
          console.error(error);
-    return Response.json({ error: "Error al subir la imagen" }, { status: 500 });
+    return Response.json({ error: "Error Uploading the imgae" }, { status: 500 });
       }
 
 }

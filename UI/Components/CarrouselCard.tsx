@@ -40,7 +40,7 @@ games.push({
 
   return (
     <Card
-      className="col-start-1 col-end-5   bg-center"
+      className="col-start-1 col-end-5   bg-center w-full"
     >
       <CardBody className="flex justify-between items-center flex-row  ">
         <Button variant="ghost"

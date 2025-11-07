@@ -60,6 +60,7 @@ if (!session?.user?.id) {
 }
       const body = await request.json(); 
     const {game}=body
+    if(!game)return Response.json({error:'no game provided'},{status:400})
     const userCart= await sql `Select * from carts where user_id=${session.user.id}`
     await sql`insert into  carts_games (cart_id,game_id,quantity) values(
         ${userCart[0].id},${game.id},1

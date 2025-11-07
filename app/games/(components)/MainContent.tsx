@@ -4,7 +4,11 @@ import { ProductCart } from "@/UI/Components/Card";
 
 import { CarouselGameDetail } from "./Carroulsel";
 import { Card, CardBody, Chip, Button,Image } from "@heroui/react";
+import { useContext } from "react";
+import { CartContext } from "@/app/contex/contex";
 export default function MainContent({game,tags,screenshoots}:{game:Games,tags:tags[],screenshoots:sreenshoots[]}){
+    const cartContext=useContext(CartContext)
+    
     return (
     <section className="w-full m-0 p-0 text-gray-100">
       <div
@@ -39,7 +43,9 @@ export default function MainContent({game,tags,screenshoots}:{game:Games,tags:ta
             ))}
           </div>
 
-          <Button
+          <Button onPress={()=>{
+            cartContext.setCartList([...cartContext.cartList,game])
+          }}
             className="mt-6 w-48 py-6 text-lg font-semibold shadow-lg 
                        bg-gradient-to-r from-yellow-500 to-orange-600 
                        hover:from-yellow-400 hover:to-orange-500 
@@ -48,7 +54,7 @@ export default function MainContent({game,tags,screenshoots}:{game:Games,tags:ta
             color="warning"
             variant="shadow"
           >
-            Buy Now
+            Add to cart
           </Button>
         </div>
       </div>
@@ -60,8 +66,7 @@ export default function MainContent({game,tags,screenshoots}:{game:Games,tags:ta
 
         <div className="flex flex-wrap justify-center gap-6">
           {screenshoots.map((screenshot) => (
-            <Card
-              key={screenshot.id}
+            <Card  key={screenshot.id}
               className="w-56 h-36 overflow-hidden rounded-2xl shadow-lg hover:scale-105 hover:shadow-[0_0_25px_rgba(255,255,255,0.15)] transition-all duration-300"
             >
               <CardBody className="p-0">

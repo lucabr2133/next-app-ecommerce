@@ -1,7 +1,7 @@
 import { Games } from "@/types/database";
 import { Button, Card, CardFooter, CardHeader, Link, Image, Spinner, DropdownTrigger, Dropdown, DropdownMenu, DropdownItem, addToast, useDisclosure } from "@heroui/react";
 import { CartContext } from "@/app/contex/contex";
-import { useContext, useState } from "react";
+import { SetStateAction, useContext, useState } from "react";
 import { usePathname } from "next/navigation";
 import { CrossIcon, DeleteIcon, Edit2Icon, EllipsisIcon, EllipsisVertical, OptionIcon, Pencil, XIcon } from "lucide-react";
 import { UpdateModal } from "@/app/dashboard/games/(components)/updateModal";
@@ -32,7 +32,7 @@ export function ShopIcon() {
   );
 }
 
-export function ProductCart({ game }: { game: Games }) {
+export function ProductCart({ game ,setGames}: { game: Games,setGames:React.Dispatch<SetStateAction<Games[]>>|null }) {
   const path=usePathname()
     const {isOpen,onOpenChange,onOpen}  =useDisclosure()
 
@@ -153,11 +153,18 @@ const isInAdminPage=path==='/dashboard/games'
             method:'DELETE'
           })
           const data= await res.json()
+          if(res?.ok && setGames){
+            setGames((prev)=>{
+              return prev.filter((game)=>game.id!=data?.game?.id)
+            })
+          }
+
           addToast({
             title:data?.message||data?.error,
             color:data?.message?'success':'danger',
             variant:'flat'
           })  
+          
          
         }} startContent={<XIcon></XIcon>} key="delete" className="text-danger"  variant='flat' color="danger">
           Delete Game
@@ -165,7 +172,7 @@ const isInAdminPage=path==='/dashboard/games'
       </DropdownMenu>
       </Dropdown>}
     </Card>
-    <UpdateModal game={game} isOpen={isOpen} onOpenChange={onOpenChange}></UpdateModal>
+    <UpdateModal setGames={setGames} game={game} isOpen={isOpen} onOpenChange={onOpenChange}></UpdateModal>
     </>
 
   );

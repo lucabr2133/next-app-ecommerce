@@ -27,7 +27,7 @@ export function MainProfile({user,orderData}:{user:User,orderData:[]}) {
                     {order.id}
                     </h2>
                     <div>
-                        <Button color="primary" variant="flat" as={Link} href={`/checkout/success?order=${order.order_id}`}>View Details</Button>
+                        <Button color="primary" variant="flat" as={Link} href={`/checkout/success?orderId=${order.order_id}`}>View Details</Button>
                     </div>
                     </div>
                     <Divider></Divider>

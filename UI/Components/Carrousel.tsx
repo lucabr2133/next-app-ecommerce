@@ -30,7 +30,6 @@ export  function Carousel({ games }: {games:Games[]}) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Imagen de fondo con blur controlado por estado */}
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{
@@ -40,10 +39,8 @@ export  function Carousel({ games }: {games:Games[]}) {
         }}
       ></div>
 
-      {/* Overlay oscuro */}
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none" />
 
-      {/* Contenido */}
       <CardBody className="flex justify-between items-center flex-row relative z-10">
         <Button
           variant="ghost"
@@ -66,7 +63,7 @@ export  function Carousel({ games }: {games:Games[]}) {
         </Button>
       </CardBody>
 
-      <CardFooter className="bg-black/20 p-5  text-white items-start flex flex-col z-10 transition-all  " style={{opacity:hovered?'1':'0',height:hovered?'300px':'0px',transition:'all 0.7s ease'}}>
+      <CardFooter className="bg-black/20 p-5  text-white items-start flex flex-col z-10 transition-all  " style={{opacity:hovered?'1':'0',transition:'all 0.3s ease'}}>
         <h2 className="text-4xl md:text-4xl font-extrabold uppercase tracking-wide drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
           {games[currentIndex].title}
         </h2>
