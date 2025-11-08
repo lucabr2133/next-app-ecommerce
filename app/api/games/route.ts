@@ -1,4 +1,4 @@
-import { validateSchema } from "@/app/schemas";
+import { validateSchema } from "@/app/(main)/schemas";
 import { auth } from "@/auth";
 import { sql } from "@/supabase";
 import { createClient } from '@supabase/supabase-js'

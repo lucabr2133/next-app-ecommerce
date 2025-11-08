@@ -2,7 +2,7 @@
 
 import { Button } from "@heroui/button";
 import { Navbar, NavbarContent, NavbarItem, Input,Link, useDisclosure, Drawer, Form, NavbarMenu, NavbarMenuToggle, NavbarMenuItem} from "@heroui/react";
-import {  useSearchParams,useRouter } from "next/navigation";
+import {  useSearchParams,useRouter, usePathname } from "next/navigation";
 import {  CircleUser, ShoppingCartIcon} from "lucide-react";
 import { useDebouncedCallback } from 'use-debounce';
 import { DrawerComponent } from "./Drawer";

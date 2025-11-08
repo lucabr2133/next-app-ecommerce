@@ -3,12 +3,8 @@
 import { signOut } from "@/auth"
 
 export  async function LogOut(){
-    try {
-        await signOut({
+         await signOut({
         redirectTo:'/login'
       })
-    } catch (error) {
-        console.error(error)
-    }
-      
+   
 }

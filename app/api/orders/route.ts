@@ -12,7 +12,7 @@ export async function GET(request: Request) {
 
     let [userCart] = await sql`
       SELECT * FROM carts WHERE user_id = ${session.user.id}
-    `;
+    `;  
 
     if (!userCart) {
       [userCart] = await sql`

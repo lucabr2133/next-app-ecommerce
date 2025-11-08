@@ -1,9 +1,9 @@
 "use client"
-import { CartContext } from "@/app/contex/contex";
 import { Button, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, Link } from "@heroui/react";
 import { useContext } from "react";
 import { ProductCart } from "./Card";
-import CheckoutButton from "@/app/checkout/(components)/CheckoutButton";
+import { CartContext } from "@/app/(main)/contex/contex";
+import CheckoutButton from "@/app/(main)/checkout/(components)/CheckoutButton";
 export function DrawerComponent({isOpen,onOpenChange}:{isOpen:boolean,onOpenChange:()=>void}){
     
     const cartContext=useContext(CartContext)
