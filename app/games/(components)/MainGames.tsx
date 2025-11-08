@@ -70,14 +70,15 @@ function setPage(number:number){
         </div>
         </div>
         <div className="grid grid-cols-5 gap-5">
-            <div className="col-start-1 col-end-5 grid grid-cols-3 gap-5 place-items-end">
+            <div className="col-start-1 col-end-6 lg:col-end-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-5 place-items-end">
                  {games.map((game)=>(
                     <ProductCart game={game} key={game.id}></ProductCart>
                 ))}
             </div>
-               <span>
+               <span className="w-full col-start-1 col-end-6 lg:col-start-5">
         <h2 className="uppercase">Sort by:</h2>
        <Listbox
+       
   disallowEmptySelection
   aria-label="Single selection example"
   selectedKeys={selectedKeys}
@@ -156,6 +157,11 @@ function setPage(number:number){
 </Listbox>
 SORT BY GENRE
 <Listbox   
+     isVirtualized
+     virtualization={{
+            maxListboxHeight: 200,
+            itemHeight: 20,
+          }}
   aria-label="Genre selection"
   selectedKeys={selectedKeysGenre}
   selectionMode="single"

@@ -18,7 +18,6 @@ export function UpdateModal({game,onOpenChange,isOpen,setGames}:{game:Games,onOp
             body:formData
         })
         const data= await res.json()
-        console.log(data);
         
         if(!data?.success){
             setErrors(data?.errors)

@@ -73,7 +73,7 @@ export default function MainGamesAdmin({games}:{games:Games[]}){
             <ModalBody>
                  <Form validationErrors={errors}   className="grid grid-cols-2 gap-5" onSubmit={onHandleCreateGame}>
                     {values.map(value=>(
-                        <Input  type={value=='release_at' ||value=='updated_at'?'date':'text'} placeholder={`${value=='company_id'?"company name":value}: `} isRequired label={`Enter  ${value=='company_id'?"company name":value}:`} name={value=='company_id'?"company_name":value} ></Input>
+                        <Input key={value} type={value=='release_at' ||value=='updated_at'?'date':'text'} placeholder={`${value=='company_id'?"company name":value}: `} isRequired label={`Enter  ${value=='company_id'?"company name":value}:`} name={value=='company_id'?"company_name":value} ></Input>
                     ))}
                     <Input type="file" className="col-start-1 col-end-3" name="file"></Input>
                     <Button type="submit" variant="flat" color="primary" >Create</Button>
@@ -93,7 +93,7 @@ export default function MainGamesAdmin({games}:{games:Games[]}){
         <h2 className="font-extrabold uppercase text-2xl">All games</h2>
             <Button onPress={onOpen} startContent={<CrossIcon></CrossIcon>} color="success" variant="flat">Add game</Button>
         </div>
-        <div className="grid grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {loading?<Spinner>loading</Spinner>: gamesPage.map(game=>(
                 <ProductCart key={game.id} setGames={setGames} game={game}></ProductCart>
             ))}

@@ -26,10 +26,18 @@ export function MainOrders({orders}:{orders:postgres.Row[]}){
                     <Button color="primary" variant="flat" onPress={async()=>{
                         setCurrentOrder(order)
                         onOpen()
-                        const gamesOrder= await fetch(`api/checkout/success?orderId=${order?.id}`)
+                        const gamesOrder= await fetch(`http://localhost:3000/api/checkout/success?orderId=${order?.id}`,{
+                          credentials:'include'
+                        })
                         const dataGames= await gamesOrder.json()
                         
+                        if(dataGames?.error){
+                        setCurrentGames([])
+
+                        }else{
                         setCurrentGames(dataGames)
+
+                        }
                     }}>View Details</Button>
 
                 </div>
@@ -55,13 +63,11 @@ return (
 
     <Divider className="opacity-70" />
 
-    {/* Table Container */}
     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-800">
       <Table
         aria-label="Orders Table"
         className="w-full"
         isStriped
-        removeWrapper
       >
         <TableHeader>
           {keys.map((key) => (

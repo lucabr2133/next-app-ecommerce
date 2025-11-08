@@ -1,15 +1,16 @@
 "use client";
 
 import { Button } from "@heroui/button";
-import { Navbar, NavbarContent, NavbarItem, Input,Link, useDisclosure, Drawer, Form} from "@heroui/react";
+import { Navbar, NavbarContent, NavbarItem, Input,Link, useDisclosure, Drawer, Form, NavbarMenu, NavbarMenuToggle, NavbarMenuItem} from "@heroui/react";
 import {  useSearchParams,useRouter } from "next/navigation";
 import {  CircleUser, ShoppingCartIcon} from "lucide-react";
 import { useDebouncedCallback } from 'use-debounce';
 import { DrawerComponent } from "./Drawer";
 import { LogOut } from "@/services/logOut";
 import { Session } from "next-auth";
+import { useState } from "react";
 export function NavbarComponet({session}:{session:Session|null}){
-  
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const searchParams=useSearchParams()
   const params=new URLSearchParams(searchParams)
   const router=useRouter()
@@ -26,20 +27,25 @@ export function NavbarComponet({session}:{session:Session|null}){
   router.replace(`http://localhost:3000/games?${params.toString()}`)
   }
     return <>
-    <Navbar className="flex justify-between m-0 w-full">
-   
-      <NavbarContent    className="sm:flex gap-4 ">
+    <Navbar className="flex justify-between  " onMenuOpenChange={setIsMenuOpen}>
+      <NavbarContent className="sm:hidden" > 
+    <NavbarMenuToggle   aria-label={isMenuOpen ? "Close menu" : "Open menu"}  >
+
+      </NavbarMenuToggle>
+      </NavbarContent>
+ 
+       <NavbarContent    className="hidden sm:flex gap-4 ">
         <NavbarItem>
           <Link href="http://localhost:3000/">My ecommerce page</Link>
         </NavbarItem>
-        <NavbarItem className="w-full">
+        <NavbarItem className="">
             <Input   defaultValue={searchParams.get('search')?.toString()} onChange={useDebouncedCallback((e)=>{
               onHandleSearch(e.target.value)
-            },500)}  className="min-w-[700px]" placeholder="Search Games..." radius="full" variant="faded" color="primary"   ></Input>
+            },500)}  className="" placeholder="Search Games..." radius="full" variant="faded" color="primary"   ></Input>
  
         </NavbarItem>
       </NavbarContent>  
-      <NavbarContent  className="w-full">
+      <NavbarContent  className="  md:flex gap-4 ">
     
             <NavbarItem>
                 <Link href="/dashboard">Dashboard</Link>
@@ -58,7 +64,20 @@ export function NavbarComponet({session}:{session:Session|null}){
          <NavbarItem>
           <Button as={Link} isIconOnly variant="flat" href={`/profile/${session?.user?.name}`} ><CircleUser></CircleUser></Button>
         </NavbarItem>
-      </NavbarContent>
+      </NavbarContent>  
+      <NavbarMenu>
+          <NavbarMenuItem>
+          <Link href="http://localhost:3000/">Home</Link>
+        </NavbarMenuItem>
+        <NavbarMenuItem className="">
+            <Input   defaultValue={searchParams.get('search')?.toString()} onChange={useDebouncedCallback((e)=>{
+              onHandleSearch(e.target.value)
+            },500)}  className="" placeholder="Search Games..." radius="full" variant="faded" color="primary"   ></Input>
+ 
+        </NavbarMenuItem>
+      </NavbarMenu>
+  
+   
   
     </Navbar>
   <DrawerComponent  isOpen={isOpen} onOpenChange={onOpenChange}>

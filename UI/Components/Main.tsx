@@ -11,17 +11,17 @@ export function MainHome({data,dataGenres,data30Games}:{data:Games[],dataGenres:
         const  featuredGamesResponse=useMemo(()=>{
         return data30Games.slice(0,6)
     },[data30Games])
-    return  <main className=" grid grid-rows-[800px_1fr_1fr] grid-cols-[1fr_1fr_1fr_350px] gap-2 ">
+    return  <main className=" grid grid-rows-[1f_1fr_1fr] grid-cols-[1fr_1fr_1fr_350px] gap-2 ">
    
                <Carousel games={featuredGamesResponse} ></Carousel>
                 
                  
-        <section   className=" col-start-1 col-end-5   flex gap-5 flex-col">
-            <div className="bg-black rounded-2xl p-5">
+        <section   className=" col-start-1 col-end-5   grid gap-5 grid-rows-2">
+            <div className="bg-black rounded-2xl md:p-5">
                  <span className="flex justify-between">
-             <h2 className="text-3xl uppercase font-extrabold "> New Games</h2>
+             <h2 className="text-3xl uppercase font-extrabold text-center w-full "> New Games</h2>
                 </span>
-            <span  className="  p-5 gap-10  flex ">
+            <span  className="  md:p-5 gap-10  flex ">
                <CarouselCard games={data} ></CarouselCard>
                      
                   
@@ -29,12 +29,12 @@ export function MainHome({data,dataGenres,data30Games}:{data:Games[],dataGenres:
             </span>
             </div>
            
-              <div className="bg-black rounded-2xl p-5">
+              <div className="bg-black rounded-2xl  md:p-5">
                  <span className="flex justify-between">
 
-                    <h2 className="text-3xl uppercase font-extrabold ">Discounts</h2>
+                    <h2 className="text-3xl uppercase font-extrabold w-full text-center ">Discounts</h2>
                 </span>
-                <span  className=" b flex p-5 gap-10 w-full">
+                <span  className=" b flex md:p-5 gap-10 w-full">
                                <CarouselCard games={data} ></CarouselCard>
 
                  
@@ -49,11 +49,11 @@ export function MainHome({data,dataGenres,data30Games}:{data:Games[],dataGenres:
         <footer className="bg-black rounded-2xl col-start-1 col-end-6 text-center  flex items-center flex-col  ">
          <div className="bg-black rounded-2xl col-start-4 col-end-5 text-center w-full h-full ">
             <p  >Categories </p>
-            <div className="grid w-full gap-10 grid-cols-4   p-3 h-full  ">
+            <div className="  grid w-full gap-10 grid-cols-1  sm:grid-cols-2 md:grid-cols-3  p-3   ">
                 {dataGenres.map(genres=>(
-                      <Link
+                      <Link key={genres.id}
             href="/games"
-            className="flex justify-center items-center w-full h-full text-2xl font-bold text-amber-400 hover:text-amber-300 transition-all border-1 rounded-3xl"
+            className=" rounded-none flex justify-center items-center w-full h-[200]  text-2xl font-bold text-amber-400 hover:text-amber-300 transition-all border-1 "
           >
             {genres.name}
           </Link>
