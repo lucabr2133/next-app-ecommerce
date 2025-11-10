@@ -1,6 +1,5 @@
-import { sql } from "../../supabase";
-import { Developers } from "../../types";
-
+import { sql } from "@/supabase";
+import { Developers } from "@/types";
 export async function cargarCompanies() {
   let url = `https://api.rawg.io/api/developers?key=${process.env.RAW_KEY}`;
   

@@ -72,7 +72,7 @@ function setPage(number:number){
         <div className="grid grid-cols-5 gap-5">
             <div className="col-start-1 col-end-6 lg:col-end-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-5 place-items-end">
                  {games.map((game)=>(
-                    <ProductCart game={game} key={game.id}></ProductCart>
+                    <ProductCart setGames={null} game={game} key={game.id}></ProductCart>
                 ))}
             </div>
                <span className="w-full col-start-1 col-end-6 lg:col-start-5">

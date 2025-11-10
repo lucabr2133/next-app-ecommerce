@@ -2,8 +2,9 @@
 import { User } from "@/auth";
 import { Button, Card, CardBody, CardHeader, Divider, Image ,Link} from "@heroui/react";
 import { Check, LucideBookDown, UserCircle2Icon } from "lucide-react";
+import postgres from "postgres";
 
-export function MainProfile({user,orderData}:{user:User,orderData:[]}) {
+export function MainProfile({user,orderData}:{user:User,orderData:postgres.RowList<postgres.Row[]>}) {
     return <>
         <main className=" h-screen flex items-center flex-col gap-5  ">
           <div className="w-full md:w-1/2 flex gap-5 items-center border-1  rounded-2xl">

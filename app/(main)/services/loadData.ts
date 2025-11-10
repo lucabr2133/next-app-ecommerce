@@ -59,7 +59,7 @@ const gameId = insertedGame?.id ?? (
   await sql`SELECT id FROM games WHERE title=${details.name}`
 )[0].id;
     // Insertar plataformas
-    for (const platform of details.parent_platforms ?? []) {
+    for (const platform of details.parent_platforms) {
       const [insertedPlatform] = await sql`
         INSERT INTO platforms (name)
         VALUES (${platform.platform.name})

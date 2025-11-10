@@ -17,7 +17,7 @@ export async function  PATCH(request:Request,{params}:{params:Promise<{userId:st
     }
    
 }
-export async function PUT(request:Request,{params}:{params:{userId:string}}){
+export async function PUT(request:Request,{params}:{params:Promise<{userId:string}>}){
     
     const {userId}=await params
     const {isActive}=await request.json()

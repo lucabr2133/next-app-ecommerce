@@ -1,5 +1,10 @@
+interface ParentPlatform{
+  platform:{
+    name:string
+  }
+}
 export interface GameDetail {
-  parent_platforms: never[];
+  parent_platforms: ParentPlatform[];
   id: number;
   slug: string;
   name: string;

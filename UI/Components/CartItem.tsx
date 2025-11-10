@@ -1,7 +1,7 @@
 
+import { CartContext } from "@/app/(main)/contex/contex";
 import {  Games } from "@/types/database";
 import { Button, Card, CardFooter, CardHeader, Link ,Image, CardBody} from "@heroui/react";
-import { CartContext } from "@/app/contex/contex";
 import { useContext } from "react";
 export function ShopIcon(){
       return  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">

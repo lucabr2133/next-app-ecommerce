@@ -2,9 +2,10 @@
 import { Games } from "@/types/database";
 import { addToast, Button, Form, Input, Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from "@heroui/react";
 import { SetStateAction, useState } from "react";
+import { keyof } from "zod";
 
-export function UpdateModal({game,onOpenChange,isOpen,setGames}:{game:Games,onOpenChange:()=>void,isOpen:boolean,setGames:React.Dispatch<SetStateAction<Games[]>|null>}){
-    const gameKeys=Object.keys(game).filter(key=>key!='id'&& key!='trailer_url'&&key!='img_url' &&key!='created_at' && key!='release_at' && key!='company_id')
+export function UpdateModal({game,onOpenChange,isOpen,setGames}:{game:Games,onOpenChange:()=>void,isOpen:boolean,setGames:React.Dispatch<SetStateAction<Games[]>>|null}){
+    const gameKeys=Object.keys(game).filter(key=>key!='id'&& key!='trailer_url'&&key!='img_url' &&key!='created_at' && key!='release_at' && key!='company_id') as (keyof Games)[]
     const [errors,setErrors]=useState({})
     
     const  onHandleSubmit=async(e:React.FormEvent<HTMLFormElement>)=>{
@@ -12,7 +13,7 @@ export function UpdateModal({game,onOpenChange,isOpen,setGames}:{game:Games,onOp
         
         const formData= new FormData(e.currentTarget)
         
-       const res= await fetch(`http://localhost:3000/api/games/${game.id}`,{
+       const res= await fetch(`/api/games/${game.id}`,{
             method:'PATCH',
           
             body:formData
@@ -56,7 +57,7 @@ export function UpdateModal({game,onOpenChange,isOpen,setGames}:{game:Games,onOp
                 <ModalBody>
                     <Form validationErrors={errors} className="grid grid-cols-2 gap-5" onSubmit={onHandleSubmit}>
                         {gameKeys.map((gameField)=>(
-                        <Input type={gameField==='updated_at'?'Date':'text'} required defaultValue={game[gameField]} placeholder={gameField} label={`write the ${gameField} field`}name={gameField}></Input>
+                        <Input type={gameField==='updated_at'?'Date':'text'} required defaultValue={String(game[gameField])} placeholder={gameField} label={`write the ${gameField} field`}name={gameField}></Input>
 
                         ))}
                         <Input type="file" label="Img file" name="file"></Input>

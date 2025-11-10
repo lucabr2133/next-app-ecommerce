@@ -4,10 +4,11 @@ import { MainGames } from "./(components)/MainGames";
 import { notFound } from "next/navigation";
 
 export default async  function gamesPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }){
-    
-    const response=await fetch(`${process.env.NEXT_LOCAL_URL}/api/games?quantity=all&genre=${searchParams.genre}&search=${searchParams.search}`)
+    const url=process.env.NEXT_PUBLIC_API_URL
+    const {genre,search}=await searchParams
+    const response=await fetch(`${url}/api/games?quantity=all&genre=${genre}&search=${search}`)
     const data:Games[]=await response.json()
-       const ResponseGeneres= await fetch(`${process.env.NEXT_LOCAL_URL}/api/genres`)
+       const ResponseGeneres= await fetch(`${url}/api/genres`)
    const genres:Genres[]= await ResponseGeneres.json()
    if(data.length==0){
      return <>
@@ -18,6 +19,7 @@ export default async  function gamesPage({ searchParams }: { searchParams: { [ke
      </div>
      </>
    }
+   
     return <MainGames genres={genres} data={data}></MainGames>
     
 }

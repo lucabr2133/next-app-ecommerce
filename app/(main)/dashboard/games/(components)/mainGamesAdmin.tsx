@@ -25,7 +25,7 @@ export default function MainGamesAdmin({games}:{games:Games[]}){
     async function onHandleCreateGame(e:React.FormEvent<HTMLFormElement>){
         e.preventDefault()
         const formdata=new FormData(e.currentTarget)
-       const res= await fetch(`http://localhost:3000/api/games`,{
+       const res= await fetch(`/api/games`,{
             method:'POST',
             body:formdata,
          

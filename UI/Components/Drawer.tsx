@@ -23,7 +23,7 @@ const totalPrice =cartContext.cartList.length>0 && cartContext.cartList.reduce(
                 <div className=""   >
   {
                 cartContext.cartList.map((game)=>(
-                    <ProductCart game={game} key={game.id}>
+                    <ProductCart  setGames={null} game={game} key={game.id}>
 
                     </ProductCart>
                 ))

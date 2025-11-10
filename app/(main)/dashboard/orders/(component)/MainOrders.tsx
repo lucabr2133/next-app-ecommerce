@@ -26,7 +26,7 @@ export function MainOrders({orders}:{orders:postgres.Row[]}){
                     <Button color="primary" variant="flat" onPress={async()=>{
                         setCurrentOrder(order)
                         onOpen()
-                        const gamesOrder= await fetch(`http://localhost:3000/api/checkout/success?orderId=${order?.id}`,{
+                        const gamesOrder= await fetch(`/api/checkout/success?orderId=${order?.id}`,{
                           credentials:'include'
                         })
                         const dataGames= await gamesOrder.json()
@@ -88,7 +88,7 @@ return (
             >
               {(columnKey) => (
                 <TableCell className="p-5 text-gray-700 dark:text-gray-200">
-                  {renderCell(item, columnKey)}
+                  {renderCell(item, String(columnKey))}
                 </TableCell>
               )}
             </TableRow>

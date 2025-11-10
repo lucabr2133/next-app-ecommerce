@@ -1,5 +1,4 @@
 import { auth } from "@/auth";
-import { useSearchParams } from "next/navigation";
 import bcrypts from 'bcryptjs'
 import { sql } from "@/supabase";
 export async function  POST(request:Request){

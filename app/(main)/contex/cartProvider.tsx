@@ -5,10 +5,11 @@ import { usePathname } from "next/navigation";
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cartList, setCartList] = useState<any[]>([]);
+    const url=process.env.NEXT_PUBLIC_API_URL
   
   // si querés cargar datos iniciales del backend:
   useEffect(() => {
-    fetch("/api/orders",{
+    fetch(`${url}/api/orders`,{
       credentials:'include'
     })
       .then((res) => res.json())

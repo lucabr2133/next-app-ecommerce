@@ -6,8 +6,9 @@ import { Spinner } from "@heroui/react";
 export default async function PageOrders(){
 
       const cookieStore =await cookies();
+    const url=process.env.NEXT_PUBLIC_API_URL
     
-    const ordersResponse= await fetch(`${process.env.NEXT_LOCAL_URL}/api/checkout`,{
+    const ordersResponse= await fetch(`${url}/api/checkout`,{
         headers:{
             Cookie: cookieStore.toString()
         }

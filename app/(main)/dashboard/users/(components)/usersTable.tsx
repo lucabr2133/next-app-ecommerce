@@ -44,7 +44,7 @@ export default function usersTable({users}:{users:User[]}){
                     </Select>
                     <Button color={user.is_active?'danger':'success'} variant="flat" onPress={async()=>{
                       
-                        await fetch(`http://localhost:3000/api/users/${user.id}`,{
+                        await fetch(`/api/users/${user.id}`,{
                             method:'PUT',
                             headers:{
                               'content-type':'Application/json'

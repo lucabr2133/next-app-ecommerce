@@ -5,8 +5,10 @@ import { cookies, headers } from "next/headers";
 
 export default async  function Page({ params }: { params: Promise<{ idGames: string }> }) {
     const {idGames}= await params
+    const url=process.env.NEXT_PUBLIC_API_URL
+
        const cookieStore =await cookies();
-    const game= await fetch(`${process.env.NEXT_LOCAL_URL}/api/games/${idGames}`,{
+    const game= await fetch(`${url}/api/games/${idGames}`,{
         headers: { Cookie: cookieStore.toString() }, // 
     })
     if (!game.ok) {
