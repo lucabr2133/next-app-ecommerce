@@ -2,6 +2,7 @@ import {heroui} from "@heroui/theme"
 
 /** @type {import('tailwindcss').Config} */
 const config = {
+   darkMode: ['class', '[data-theme="dark"]'], // sopo
   content: [
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
@@ -65,7 +66,6 @@ const config = {
       },
     },
   },
-  darkMode: "class",
   plugins: [heroui()],
 }
 

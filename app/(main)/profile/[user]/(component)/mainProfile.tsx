@@ -5,12 +5,12 @@ import { Check, LucideBookDown, UserCircle2Icon } from "lucide-react";
 
 export function MainProfile({user,orderData}:{user:User,orderData:[]}) {
     return <>
-        <main className="bg-gradient-to-b   from-gray-950  to-gray-900 h-screen flex items-center flex-col gap-5  ">
+        <main className=" h-screen flex items-center flex-col gap-5  ">
           <div className="w-full md:w-1/2 flex gap-5 items-center border-1  rounded-2xl">
                 <UserCircle2Icon width={150} height={159}/>
                 <h2 className="text-center capitalize text-3xl">{user.username}</h2>
             </div>
-            <Card className="bg-black md:h-1/2 md:w-1/2 border-1 ">
+            <Card className="md:h-1/2 md:w-1/2 border-1 ">
                 <CardHeader className="">
                       <h2>My orders</h2>
                         

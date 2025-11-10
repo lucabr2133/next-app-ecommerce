@@ -1,7 +1,6 @@
 import { gameDetailResponse, Genres } from "@/types/database"
 import MainContent from "../(components)/MainContent"
 import { cookies, headers } from "next/headers";
-import Error from "@/app/error";
 
 
 export default async  function Page({ params }: { params: Promise<{ idGames: string }> }) {
@@ -22,7 +21,7 @@ export default async  function Page({ params }: { params: Promise<{ idGames: str
     const tags= data.tags
     const screenshoots=data.screenshots
 return <>
-    <main className="p-0 m-0  bg-black " >
+    <main className="p-0 m-0  " >
       <MainContent   screenshoots={screenshoots} tags={tags} game={gameData}>
       
       </MainContent>

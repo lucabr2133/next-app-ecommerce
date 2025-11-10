@@ -5,7 +5,7 @@ import { ProductCart } from "@/UI/Components/Card";
 import { CarouselGameDetail } from "./Carroulsel";
 import { Card, CardBody, Chip, Button,Image } from "@heroui/react";
 import { useContext } from "react";
-import { CartContext } from "@/app/contex/contex";
+import { CartContext } from "../../contex/contex";
 export default function MainContent({game,tags,screenshoots}:{game:Games,tags:tags[],screenshoots:sreenshoots[]}){
     const cartContext=useContext(CartContext)
     
@@ -59,12 +59,12 @@ export default function MainContent({game,tags,screenshoots}:{game:Games,tags:ta
         </div>
       </div>
 
-      <div className="m-8 grid grid-cols-1 md:grid-cols-2 gap-8 place-items-center">
+      <div className="m-8 grid grid-cols-1 md:grid-cols-2 gap-8 place-items-center ">
         <div className="w-full max-w-3xl">
           <CarouselGameDetail images={screenshoots} />
         </div>
 
-        <div className="flex flex-wrap justify-center gap-6">
+        <div className=" flex flex-wrap justify-center gap-6 ">
           {screenshoots.map((screenshot) => (
             <Card  key={screenshot.id}
               className="w-56 h-36 overflow-hidden rounded-2xl shadow-lg hover:scale-105 hover:shadow-[0_0_25px_rgba(255,255,255,0.15)] transition-all duration-300"

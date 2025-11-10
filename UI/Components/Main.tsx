@@ -17,7 +17,7 @@ export function MainHome({data,dataGenres,data30Games}:{data:Games[],dataGenres:
                 
                  
         <section   className=" col-start-1 col-end-5   grid gap-5 grid-rows-2">
-            <div className="bg-black rounded-2xl md:p-5">
+            <div className=" rounded-2xl md:p-5">
                  <span className="flex justify-between">
              <h2 className="text-3xl uppercase font-extrabold text-center w-full "> New Games</h2>
                 </span>
@@ -29,7 +29,7 @@ export function MainHome({data,dataGenres,data30Games}:{data:Games[],dataGenres:
             </span>
             </div>
            
-              <div className="bg-black rounded-2xl  md:p-5">
+              <div className=" rounded-2xl  md:p-5">
                  <span className="flex justify-between">
 
                     <h2 className="text-3xl uppercase font-extrabold w-full text-center ">Discounts</h2>
@@ -46,8 +46,8 @@ export function MainHome({data,dataGenres,data30Games}:{data:Games[],dataGenres:
         </section>
         
 
-        <footer className="bg-black rounded-2xl col-start-1 col-end-6 text-center  flex items-center flex-col  ">
-         <div className="bg-black rounded-2xl col-start-4 col-end-5 text-center w-full h-full ">
+        <footer className=" rounded-2xl col-start-1 col-end-6 text-center  flex items-center flex-col  ">
+         <div className=" rounded-2xl col-start-4 col-end-5 text-center w-full h-full ">
             <p  >Categories </p>
             <div className="  grid w-full gap-10 grid-cols-1  sm:grid-cols-2 md:grid-cols-3  p-3   ">
                 {dataGenres.map(genres=>(

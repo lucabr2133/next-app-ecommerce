@@ -23,7 +23,7 @@ export  function HomeSuccess({ orderData }: { orderData: any[] }) {
   };
 
   return (
-    <main className=" min-h-screen flex flex-col place-items-center p-6 place-content-center bg-gradient-to-b gap-5  from-gray-950  to-gray-900">
+    <main className=" min-h-screen flex flex-col place-items-center p-6 place-content-center  gap-5  ">
             <div className="flex flex-col items-center">
                <CheckCircle className="w-16 h-16 text-green-500 mb-3" />
          <h1 className="text-3xl font-bold">¡Gracias por tu compra!</h1>
@@ -41,7 +41,7 @@ export  function HomeSuccess({ orderData }: { orderData: any[] }) {
                 <Divider></Divider>
                 <CardBody className="flex gap-5">
                     {orderData.length>0?orderData.map(order=>(
-                        <div key={order.id} className="bg-gray-900  p-2 rounded-2xl flex justify-between items-center">
+                        <div key={order.id} className=" p-2 rounded-2xl flex justify-between items-center">
                          <div className="">
                             <Image className="w-32" src={`${order?.img_url}`}></Image>
                              <div>

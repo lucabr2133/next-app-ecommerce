@@ -101,7 +101,7 @@ const isInAdminPage=path==='/dashboard/games'
       </div>
 
       {!isPlaceholder && !isInAdminPage && (
-        <CardFooter className="absolute bottom-0 left-0 right-0 z-20 bg-black/60 backdrop-blur-md flex justify-between items-center px-4 py-3">
+        <CardFooter className="absolute bottom-0 left-0 right-0 z-20  backdrop-blur-md flex justify-between items-center px-4 py-3">
           <div className="flex gap-2">
             {loading ? (
               <Spinner size="sm" color="warning" />
