@@ -24,6 +24,15 @@ return <>
             </>
           )}
           <Link href='/sign'>Sign up</Link>
+          <Button onPress={(e)=>{
+            const fomrdata=new FormData()
+            fomrdata.append('username','adminGuest')
+            fomrdata.append('password','adminGuest')
+            fomrdata.append('email','guestAdminUser@gmail.com')
+            authenticate(undefined,fomrdata)
+            
+          }}>Enter as Admin guest</Button>
+
     </Form>
 
     </main>

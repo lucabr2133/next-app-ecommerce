@@ -19,7 +19,7 @@ export default  async function RootLayout({ children }: { children: React.ReactN
       <head>
         <title>Document</title>
       </head>
-      <body className="bg-black dark text-foreground m-0">
+      <body className=" text-foreground m-0">
         <Providers>
 
 
