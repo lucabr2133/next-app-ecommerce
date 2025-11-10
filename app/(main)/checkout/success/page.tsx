@@ -2,7 +2,7 @@ import { cookies } from "next/headers"
 import { HomeSuccess } from "./(component)/homeSuccest"
 
 export default async function Page({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }){
-    const {orderId}=await searchParams
+    const {orderId}= searchParams
     const cookie=await cookies()
     const url=process.env.NEXT_PUBLIC_API_URL
 
