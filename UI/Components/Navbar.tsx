@@ -70,7 +70,7 @@ export function NavbarComponet({session}:{session:Session|null}){
       </NavbarContent>  
       <NavbarMenu>
           <NavbarMenuItem>
-          <Link href="http://localhost:3000/">Home</Link>
+          <Link href={process.env.NEXT_PUBLIC_API_URL}>Home</Link>
         </NavbarMenuItem>
         <NavbarMenuItem className="">
             <Input   defaultValue={searchParams.get('search')?.toString()} onChange={useDebouncedCallback((e)=>{
