@@ -18,18 +18,14 @@ return <>
         <Input placeholder="password" name="password" label='type your password'></Input>
           <input type="hidden" name="redirectTo" value={callbackUrl} />
         <Button type="submit" color="primary">Send</Button>
-        {state && (
-            <>
-              <p className="text-sm text-red-500">{state}</p>
-            </>
-          )}
+      
           <Link href='/sign'>Sign up</Link>
           <Button onPress={(e)=>{
             const fomrdata=new FormData()
             fomrdata.append('username','adminGuest')
             fomrdata.append('password','adminGuest')
             fomrdata.append('email','guestAdminUser@gmail.com')
-            authenticate(undefined,fomrdata)
+            formAction(fomrdata)
             
           }}>Enter as Admin guest</Button>
 
