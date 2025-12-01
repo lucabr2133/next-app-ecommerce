@@ -15,6 +15,8 @@ export function NavbarComponet({session}:{session:Session|null}){
   const searchParams=useSearchParams()
   const params=new URLSearchParams(searchParams)
   const router=useRouter()
+    const url=process.env.NEXT_PUBLIC_API_URL
+
   const {isOpen,onOpen,onOpenChange} =useDisclosure();
   function onHandleSearch(search:string){
     
@@ -23,7 +25,7 @@ export function NavbarComponet({session}:{session:Session|null}){
   }else{
     params.delete('search')
   }
-  router.replace(`http://localhost:3000/games?${params.toString()}`)
+  router.replace(`${url}/games?${params.toString()}`)
   }
     return <>
     <Navbar className="flex justify-between  " onMenuOpenChange={setIsMenuOpen}>
@@ -35,7 +37,7 @@ export function NavbarComponet({session}:{session:Session|null}){
  
        <NavbarContent    className="hidden sm:flex gap-4 ">
         <NavbarItem>
-          <Link href="http://localhost:3000/">My ecommerce page</Link>
+          <Link href={url}>My ecommerce page</Link>
         </NavbarItem>
         <NavbarItem className="">
             <Input   defaultValue={searchParams.get('search')?.toString()} onChange={useDebouncedCallback((e)=>{
