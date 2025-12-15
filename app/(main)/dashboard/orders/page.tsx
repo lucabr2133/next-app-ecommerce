@@ -1,7 +1,5 @@
 import { cookies } from "next/headers";
-import { MainOrders } from "./(component)/MainOrders";
-import { Suspense } from "react";
-import { Spinner } from "@heroui/react";
+import { MainOrders } from "@/components/dashboardComponents/orders/MainOrders";
 
 export default async function PageOrders(){
 

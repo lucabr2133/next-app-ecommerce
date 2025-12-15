@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { sql } from "@/supabase";
-import { stripe } from "@/services/stripe/config";
+import { stripe } from "@/lib/stripe";
 
 
 

@@ -1,5 +1,5 @@
 import { cookies } from "next/headers"
-import { HomeSuccess } from "./(component)/homeSuccest"
+import { HomeSuccess } from "@/components/checkoutComponents/homeSuccest"
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }){
     const {orderId}= await searchParams

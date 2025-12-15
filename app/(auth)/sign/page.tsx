@@ -1,6 +1,6 @@
 "use client";
 
-import { signIn } from "@/services/signIn";
+import { signIn } from "@/lib/signIn";
 import { Button, Divider, Form, Input, Link } from "@heroui/react";
 import { useActionState, useEffect, useRef } from "react";
 

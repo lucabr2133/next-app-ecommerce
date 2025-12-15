@@ -1,12 +1,13 @@
 "use client"
 
 import { Games, Genres } from "@/types/database";
-import { ProductCart } from "@/UI/Components/Card";
-import { Dropdown, DropdownTrigger, Button, DropdownMenu, DropdownItem, Radio, RadioGroup, Listbox, ListboxItem ,Selection} from "@heroui/react";
-import React, { useEffect, useMemo } from "react";
+import { ProductCart } from "@/components/globalComponents/Card";
+import {  Listbox, ListboxItem ,Selection} from "@heroui/react";
+import React, { Suspense, useEffect, useMemo } from "react";
 import { useState } from "react";
 import { Pagination } from "./Pagination";
 import { notFound, usePathname, useRouter, useSearchParams } from "next/navigation";
+import Loading from "@/app/(main)/loading";
 export function MainGames({data,genres}:{data:Games[],genres:Genres[]}){
  
   const Params=useSearchParams()
@@ -34,7 +35,6 @@ const dataSlice = useMemo(() => {
   return newData;
 }, [dataGames]);
 
-// Página actual
 const games = useMemo(() => dataSlice[index], [index, dataSlice]);
       const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
       const [selectedKeysGenre, setSelectedKeysGenre] = React.useState<Selection>(new Set([]));
@@ -70,11 +70,14 @@ function setPage(number:number){
         </div>
         </div>
         <div className="grid grid-cols-5 gap-5">
-            <div className="col-start-1 col-end-6 lg:col-end-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-5 place-items-end">
+          <Suspense fallback={<Loading></Loading>} >
+       <div  className="col-start-1 col-end-6 lg:col-end-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-5 place-items-end">
                  {games.map((game)=>(
                     <ProductCart setGames={null} game={game} key={game.id}></ProductCart>
                 ))}
             </div>
+          </Suspense>
+          
                <span className="w-full col-start-1 col-end-6 lg:col-start-5">
         <h2 className="uppercase">Sort by:</h2>
        <Listbox

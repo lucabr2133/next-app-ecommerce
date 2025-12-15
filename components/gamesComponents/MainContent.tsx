@@ -5,7 +5,7 @@ import { ProductCart } from "@/UI/Components/Card";
 import { CarouselGameDetail } from "./Carroulsel";
 import { Card, CardBody, Chip, Button,Image } from "@heroui/react";
 import { useContext } from "react";
-import { CartContext } from "../../contex/contex";
+import { CartContext } from "../../app/(main)/contex/contex";
 export default function MainContent({game,tags,screenshoots}:{game:Games,tags:tags[],screenshoots:sreenshoots[]}){
     const cartContext=useContext(CartContext)
     

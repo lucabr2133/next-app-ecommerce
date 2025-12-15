@@ -2,9 +2,9 @@ import { Games } from "@/types/database";
 import { Button, Card, CardFooter, CardHeader, Link, Image, Spinner, DropdownTrigger, Dropdown, DropdownMenu, DropdownItem, addToast, useDisclosure } from "@heroui/react";
 import { SetStateAction, useContext, useState } from "react";
 import { usePathname } from "next/navigation";
-import { CrossIcon, DeleteIcon, Edit2Icon, EllipsisIcon, EllipsisVertical, OptionIcon, Pencil, XIcon } from "lucide-react";
+import {EllipsisVertical ,Pencil, XIcon } from "lucide-react";
 import { CartContext } from "@/app/(main)/contex/contex";
-import { UpdateModal } from "@/app/(main)/dashboard/games/(components)/updateModal";
+import { UpdateModal } from "@/components/dashboardComponents/games/updateModal";
 
 export function ShopIcon() {
   return (
@@ -37,7 +37,6 @@ export function ProductCart({ game ,setGames}: { game: Games,setGames:React.Disp
     const {isOpen,onOpenChange,onOpen}  =useDisclosure()
 
   const { cartList, setCartList } = useContext(CartContext);
-  console.log(cartList);
   
   const [loading, setLoading] = useState(false);
   const isInCart = cartList.some((g) => g.id === game.id);

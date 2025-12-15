@@ -1,6 +1,6 @@
 "use client"
 import { Button, Card, CardBody, CardFooter, CardHeader, Divider, Link } from "@heroui/react";
-import { data } from "../../page";
+import { data } from "../../../app/(main)/dashboard/page";
 
 export  function MainDashboard({data}:{data:data}) {
     const {totalUser,totalGames,totalOrders}=data

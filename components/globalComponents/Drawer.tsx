@@ -3,7 +3,7 @@ import { Button, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, 
 import { useContext } from "react";
 import { ProductCart } from "./Card";
 import { CartContext } from "@/app/(main)/contex/contex";
-import CheckoutButton from "@/app/(main)/checkout/(components)/CheckoutButton";
+import CheckoutButton from "@/components/checkoutComponents/CheckoutButton";
 export function DrawerComponent({isOpen,onOpenChange}:{isOpen:boolean,onOpenChange:()=>void}){
     
     const cartContext=useContext(CartContext)

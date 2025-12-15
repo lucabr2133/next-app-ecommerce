@@ -1,6 +1,6 @@
 "use client"
 import { Games } from "@/types/database";
-import { ProductCart } from "@/UI/Components/Card";
+import { ProductCart } from "@/components/globalComponents/Card";
 import { addToast, Button, Form, Input, Modal, ModalBody, ModalContent, ModalHeader, Pagination, Spinner, useDisclosure } from "@heroui/react";
 import { CrossIcon } from "lucide-react";
 import { useMemo, useState } from "react";

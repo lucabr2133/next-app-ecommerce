@@ -1,4 +1,4 @@
-import MainGamesAdmin from "./(components)/mainGamesAdmin"
+import MainGamesAdmin from "@/components/dashboardComponents/games/MainGamesAdmin"
 
 export  default async function pageGame(){
     const url=process.env.NEXT_PUBLIC_API_URL

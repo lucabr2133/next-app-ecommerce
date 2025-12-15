@@ -1,5 +1,5 @@
 import { gameDetailResponse, Genres } from "@/types/database"
-import MainContent from "../(components)/MainContent"
+import MainContent from "@/components/gamesComponents/MainContent"
 import { cookies, headers } from "next/headers";
 
 

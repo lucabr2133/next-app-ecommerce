@@ -1,6 +1,6 @@
 import "@/styles/globals.css";
 import { Providers } from "../(main)/providers";
-import { NavbarComponet } from "@/UI/Components/Navbar";
+import { NavbarComponet } from "@/components/globalComponents/Navbar";
 import { inter } from "@/fonts";
 import {SessionProvider} from 'next-auth/react'
 import { auth } from "@/auth";

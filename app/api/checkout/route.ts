@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { stripe } from "@/services/stripe/config";
+import { stripe } from "@/lib/stripe";
 import { sql } from "@/supabase"
 import { Games } from "@/types/database";
 

@@ -2,7 +2,7 @@
 import { Button, Form, Input, Link } from "@heroui/react";
 
 import { useSearchParams } from "next/navigation";
-import { authenticate } from "@/services/authenticate";
+import { authenticate } from "@/lib/authenticate";
 import { useActionState } from "react";
 
 export  default function LoginPage(){

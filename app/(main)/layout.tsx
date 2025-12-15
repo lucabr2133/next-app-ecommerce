@@ -1,6 +1,6 @@
 import "@/styles/globals.css";
 import { Providers } from "./providers";
-import { NavbarComponet } from "@/UI/Components/Navbar";
+import { NavbarComponet } from "@/components/globalComponents/Navbar";
 import { inter } from "@/fonts";
 import { CartProvider } from "./contex/cartProvider";
 import { auth } from "@/auth";

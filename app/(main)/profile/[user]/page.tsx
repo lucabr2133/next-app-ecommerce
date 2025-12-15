@@ -1,5 +1,5 @@
 import { auth, User } from "@/auth"
-import { MainProfile } from "./(component)/mainProfile"
+import { MainProfile } from "@/components/profileComponents/mainProfile"
 import { sql } from "@/supabase"
 export default async function profilePage() {
     const session=await auth()

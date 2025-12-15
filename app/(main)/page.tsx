@@ -1,5 +1,5 @@
 import { Games, Genres } from "@/types/database";
-import { MainHome } from "@/UI/Components/Main";
+import { MainHome } from "@/components/globalComponents/Main";
 import { useMemo } from "react";
 export default async function page(){
     const url=process.env.NEXT_PUBLIC_API_URL

@@ -1,7 +1,6 @@
 import { Games, Genres } from "@/types/database"
 
-import { MainGames } from "./(components)/MainGames";
-import { notFound } from "next/navigation";
+import { MainGames } from "@/components/gamesComponents/MainGames";
 
 export default async  function gamesPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }){
     const url=process.env.NEXT_PUBLIC_API_URL

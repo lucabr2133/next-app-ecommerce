@@ -6,7 +6,7 @@ import {  useSearchParams,useRouter, usePathname } from "next/navigation";
 import {  CircleUser, ShoppingCartIcon, Sun} from "lucide-react";
 import { useDebouncedCallback } from 'use-debounce';
 import { DrawerComponent } from "./Drawer";
-import { LogOut } from "@/services/logOut";
+import { LogOut } from "@/lib/logOut";
 import { Session } from "next-auth";
 import { useEffect, useState } from "react";
 import { ThemeSwitcher } from "./ThemeSwitcher";

@@ -1,5 +1,5 @@
 import { sql } from "@/supabase"
-import { MainDashboard } from "./users/(components)/mainDashboard"
+import { MainDashboard } from "@/components/dashboardComponents/users/mainDashboard"
 import { Row } from "postgres"
 export type data={
     totalUser:Row

@@ -9,7 +9,6 @@ export function CarouselCard({ games }: { games: Games[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [cardsPerView, setCardsPerView] = useState(3);
 
-  // Agregar el último "See more"
   const updatedGames = [...games, {
     id: "11",
     title: "See more",
@@ -25,12 +24,11 @@ export function CarouselCard({ games }: { games: Games[] }) {
     updated_at: new Date()
   }];
 
-  // Ajustar cuántas cards mostrar según el ancho de pantalla
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 640) setCardsPerView(1);       // móvil
-      else if (window.innerWidth < 1024) setCardsPerView(2); // tablet
-      else setCardsPerView(3);                               // desktop
+      if (window.innerWidth < 640) setCardsPerView(1);      
+      else if (window.innerWidth < 1024) setCardsPerView(2); 
+      else setCardsPerView(3);                              
     };
     handleResize(); // ejecutar al montar
     window.addEventListener("resize", handleResize);
