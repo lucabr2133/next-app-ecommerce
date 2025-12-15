@@ -1,53 +1,43 @@
-# Next.js & HeroUI Template
+# 🛒 E-commerce App – Next.js
 
-This is a template for creating applications using Next.js 14 (app directory) and HeroUI (v2).
+E-commerce web application built with Next.js as a learning project, focused on modern React patterns, UI components and responsive design.
 
-[Try it on CodeSandbox](https://githubbox.com/heroui-inc/heroui/next-app-template)
+## 🚀 Features
+- Product listing
+- Product detail page
+- Responsive layout
+- Modern UI with HeroUI
+- Dark / light theme support
 
-## Technologies Used
+## 🛠️ Tech Stack
+- Next.js 14 (App Router)
+- React
+- TypeScript
+- Tailwind CSS
+- HeroUI
+- Framer Motion
 
-- [Next.js 14](https://nextjs.org/docs/getting-started)
-- [HeroUI v2](https://heroui.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Framer Motion](https://www.framer.com/motion/)
-- [next-themes](https://github.com/pacocoursey/next-themes)
+## ▶️ Run locally
 
-## How to Use
-
-### Use the template with create-next-app
-
-To create a new project based on this template using `create-next-app`, run the following command:
-
-```bash
-npx create-next-app -e https://github.com/heroui-inc/next-app-template
-```
-
-### Install dependencies
-
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
+Clone the repository and run:
 
 ```bash
 npm install
-```
-
-### Run the development server
-
-```bash
 npm run dev
 ```
+## 🌐 Live Demo
+🚧 Coming soon — the project will be deployed on Vercel.
 
-### Setup pnpm (optional)
+## 📚 What I learned
+- Fundamentals of the Next.js App Router
+- Component-based architecture with React
+- Styling and theming using Tailwind CSS and HeroUI
+- Best practices for project structure in Next.js
+- Building responsive and accessible user interfaces
 
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
+## 📌 Future Improvements
+- Shopping cart functionality
+- Data persistence
+- Product filtering and search
+- User authentication
 
-```bash
-public-hoist-pattern[]=*@heroui/*
-```
-
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
-
-## License
-
-Licensed under the [MIT license](https://github.com/heroui-inc/next-app-template/blob/main/LICENSE).
