@@ -1,6 +1,6 @@
 "use client"
 import { Games, sreenshoots, tags } from "@/types/database";
-import { ProductCart } from "@/UI/Components/Card";
+import { ProductCart } from "@/components/globalComponents/Card";
 
 import { CarouselGameDetail } from "./Carroulsel";
 import { Card, CardBody, Chip, Button,Image } from "@heroui/react";
