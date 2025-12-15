@@ -1,6 +1,7 @@
 # 🛒 E-commerce App – Next.js
 ## 🌐 Live Demo
-🔗https://next-app-ecommerce-gamma.vercel.app/
+🔗 https://next-app-ecommerce-gamma.vercel.app/
+
 E-commerce web application built with Next.js as a learning project, focused on modern React patterns, UI components and responsive design.
 
 ## 🚀 Features
