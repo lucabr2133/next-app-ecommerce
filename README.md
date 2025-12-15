@@ -1,16 +1,38 @@
 # 🛒 E-commerce App – Next.js
-
+## 🌐 Live Demo
+🔗https://next-app-ecommerce-gamma.vercel.app/
 E-commerce web application built with Next.js as a learning project, focused on modern React patterns, UI components and responsive design.
 
 ## 🚀 Features
-- Product listing
-- Product detail page
-- Responsive layout
-- Modern UI with HeroUI
+- Product listing and product detail pages
+- Shopping cart functionality
+- Secure checkout with Stripe
+- User authentication
+- Admin dashboard for product and order management
+- Responsive design
 - Dark / light theme support
+## 🛠️ Admin Dashboard
+The application includes an admin dashboard that allows authorized users to:
+- Manage products
+- View and manage orders
+- Access administrative tools
+
+This feature was built to practice role-based access and application management.
+## 💳 Payments
+- Integrated Stripe Checkout for secure payments
+- Backend handling using Next.js Route Handlers
+- Webhook support for payment events
+## 📚 What I learned
+- Fullstack development with Next.js App Router
+- Building and consuming API routes
+- Authentication and role-based access
+- Integrating Stripe payments and webhooks
+- Structuring scalable Next.js applications
+- Managing state and business logic in React
+
 
 ## 🛠️ Tech Stack
-- Next.js 14 (App Router)
+- Next.js 
 - React
 - TypeScript
 - Tailwind CSS
@@ -25,19 +47,6 @@ Clone the repository and run:
 npm install
 npm run dev
 ```
-## 🌐 Live Demo
-🚧 Coming soon — the project will be deployed on Vercel.
 
-## 📚 What I learned
-- Fundamentals of the Next.js App Router
-- Component-based architecture with React
-- Styling and theming using Tailwind CSS and HeroUI
-- Best practices for project structure in Next.js
-- Building responsive and accessible user interfaces
 
-## 📌 Future Improvements
-- Shopping cart functionality
-- Data persistence
-- Product filtering and search
-- User authentication
 
