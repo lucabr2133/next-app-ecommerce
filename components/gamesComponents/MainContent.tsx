@@ -8,7 +8,8 @@ import { useContext } from "react";
 import { CartContext } from "../../app/(main)/contex/contex";
 export default function MainContent({game,tags,screenshoots}:{game:Games,tags:tags[],screenshoots:sreenshoots[]}){
     const cartContext=useContext(CartContext)
-    
+      const { cartList, setCartList } = useContext(CartContext);
+
     return (
     <section className="w-full m-0 p-0 text-gray-100">
       <div
@@ -43,8 +44,15 @@ export default function MainContent({game,tags,screenshoots}:{game:Games,tags:ta
             ))}
           </div>
 
-          <Button onPress={()=>{
-            cartContext.setCartList([...cartContext.cartList,game])
+          <Button onPress={async()=>{
+            console.log(game);
+            
+        //         await fetch("/api/orders", {
+        //   method: "POST",
+        //   headers: { "Content-Type": "application/json" },
+        //   body: JSON.stringify({ game }),
+        // });
+        //     setCartList([...cartList,game])
           }}
             className="mt-6 w-48 py-6 text-lg font-semibold shadow-lg 
                        bg-gradient-to-r from-yellow-500 to-orange-600 

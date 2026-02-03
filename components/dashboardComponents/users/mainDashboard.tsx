@@ -9,7 +9,7 @@ export  function MainDashboard({data}:{data:data,}) {
     
     return <>
     
-     <main className="h-screen p-2 md:p-10 w-[99vw] flex flex-col gap-5 ">
+     <main className="h-screen p-2 md:p-10 w-[100vw] flex flex-col gap-5 ">
         <header>
         <h2 className="uppercase font-extrabold text-3xl">Main Dashboard</h2>
         <Divider></Divider>
@@ -19,8 +19,8 @@ export  function MainDashboard({data}:{data:data,}) {
         </header>
      
 
-        <div className="grid grid-cols-3 grid-rows-2 w-full gap-5">
-             <ul className="col-start-1 col-end-3 grid-cols-4 grid-rows-2 grid gap-5 *:text-white ">
+        <div className=" lg:grid lg:grid-cols-3 lg:grid-rows-2 w-full gap-5 flex flex-col">
+             <ul className="col-start-1 col-end-3 xl:grid-cols-2 xl:grid-rows-2 xl:grid flex flex-wrap *:flex-1 gap-5 *:text-white ">
                     <Card className="min-w-[300] bg-gradient-to-r from-[#4b857d]  to-[#03a48e]  rounded-none  ">
                         <CardBody className=" justify-center  p-10 flex gap-5  ">
                             Total Users
