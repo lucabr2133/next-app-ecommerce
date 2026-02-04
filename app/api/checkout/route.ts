@@ -62,8 +62,8 @@ const lineItems = games.map((game:Games) => ({
     mode: "payment",
     payment_method_types: ["card"],
     line_items: lineItems,
-    success_url: `http://localhost:3000/checkout/success?orderId=${order[0].id}`,
-    cancel_url: `http://localhost:3000/checkout/cancel`,
+    success_url: `${process.env.NEXT_PUBLIC_API_URL}/checkout/success?orderId=${order[0].id}`,
+    cancel_url: `${process.env.NEXT_PUBLIC_API_URL}/checkout/cancel`,
     metadata: {
       orderId: order[0].id.toString(),
       userId: session.user.id,
