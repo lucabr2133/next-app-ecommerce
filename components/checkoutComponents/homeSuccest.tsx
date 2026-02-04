@@ -10,7 +10,7 @@ export  function HomeSuccess({ orderData }: { orderData: any[] }) {
   if (!orderData || orderData.length === 0) {
     return (
       <main className="min-h-screen flex items-center justify-center text-white bg-black">
-        <p>No hay información de la orden.</p>
+        <p>no order information.</p>
       </main>
     );
   }
@@ -26,13 +26,13 @@ export  function HomeSuccess({ orderData }: { orderData: any[] }) {
     <main className=" min-h-screen flex flex-col place-items-center p-6 place-content-center  gap-5  ">
             <div className="flex flex-col items-center">
                <CheckCircle className="w-16 h-16 text-green-500 mb-3" />
-         <h1 className="text-3xl font-bold">¡Gracias por tu compra!</h1>
-        <p className="text-gray-400 mt-1">Tu orden #{first?.order_id} fue completada correctamente.</p>
+         <h1 className="text-3xl font-bold">¡Thanks for you buy!</h1>
+        <p className="text-gray-400 mt-1">your order{first?.order_id} was  complete succesfull.</p>
             </div>
             <Card className="min-w-1/3 ">
                 <CardHeader className="border-b border-gray-800">
                     <div className="flex justify-between w-full">
-                      <h2 className="text-xl font-semibold">Detalles de tu orden</h2>
+                      <h2 className="text-xl font-semibold">Order details</h2>
          <p className="text-gray-500 text-sm">
          Fecha: {new Date(first?.created_at).toLocaleDateString()}
           </p>
