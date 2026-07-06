@@ -5,13 +5,13 @@ import { Games } from "@/types/database";
 
 
 export async function GET(request:Request) {
-     const session=await auth()
+     const session = await auth()
      
-    if(session?.user?.role !=='admin'){
-         throw new Error("User not authenticated");
+    if(session?.user?.role !== 'admin'){
+         return Response.json({error: "User not authenticated"}, {status: 401})
     }
   try {
-   const orders= await sql `select orders.* ,username from users  inner join orders on orders.user_id=users.id`
+   const orders = await sql `select orders.* ,username from users  inner join orders on orders.user_id=users.id`
     return Response.json(orders,{status:200})
   } catch (error) {
     console.log(error);
@@ -19,8 +19,6 @@ export async function GET(request:Request) {
     return Response.json({error},{status:400})
     
   }
-   
-    
 }
 export async function POST(request:Request) {
     const {games}=await request.json()

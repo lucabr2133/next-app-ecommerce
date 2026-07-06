@@ -1,22 +1,16 @@
-import { cookies } from "next/headers";
+import { sql } from "@/supabase";
 import { MainOrders } from "@/components/dashboardComponents/orders/MainOrders";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function PageOrders(){
-
-      const cookieStore =await cookies();
-    const url=process.env.NEXT_PUBLIC_API_URL
+    const session = await auth();
     
-    const ordersResponse= await fetch(`${url}/api/checkout`,{
-        headers:{
-            Cookie: cookieStore.toString()
-        }
-    })
-    const dataResponse= await ordersResponse.json()
+    if (session?.user?.role !== 'admin') {
+        redirect('/');
+    }
     
-    return <>
-   <MainOrders orders={dataResponse}>
-
-        </MainOrders>
-     
-    </>
+    const orders = await sql`select orders.*, username from users inner join orders on orders.user_id = users.id`;
+    
+    return <MainOrders orders={orders} />
 }

@@ -1,47 +1,46 @@
 import { Games } from "@/types/database";
-import { Button, Card, CardFooter, CardHeader, Link, Image, Spinner, DropdownTrigger, Dropdown, DropdownMenu, DropdownItem, addToast, useDisclosure } from "@heroui/react";
+import {
+  Button,
+  Card,
+  CardFooter,
+  CardHeader,
+  Link,
+  Image,
+  Spinner,
+  DropdownTrigger,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem,
+  addToast,
+  useDisclosure,
+} from "@heroui/react";
 import { SetStateAction, useContext, useState } from "react";
 import { usePathname } from "next/navigation";
-import {EllipsisVertical ,Pencil, XIcon } from "lucide-react";
+import { EllipsisVertical, Pencil, XIcon, ShoppingCart, Info } from "lucide-react";
 import { CartContext } from "@/app/(main)/contex/contex";
 import { UpdateModal } from "@/components/dashboardComponents/games/updateModal";
 
 export function ShopIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={1.8}
-      stroke="currentColor"
-      className="w-5 h-5"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 
-        14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218
-        c1.121-2.3 2.1-4.684 2.924-7.138
-        a60.114 60.114 0 0 0-16.536-1.84M7.5
-        14.25 5.106 5.272M6 20.25a.75.75 0 1 
-        1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 
-        0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 
-        1.5 0Z"
-      />
-    </svg>
-  );
+  return <ShoppingCart className="w-4 h-4" />;
 }
 
-export function ProductCart({ game ,setGames}: { game: Games,setGames:React.Dispatch<SetStateAction<Games[]>>|null }) {
-  const path=usePathname()
-    const {isOpen,onOpenChange,onOpen}  =useDisclosure()
+export function ProductCart({
+  game,
+  setGames,
+}: {
+  game: Games;
+  setGames: React.Dispatch<SetStateAction<Games[]>> | null;
+}) {
+  const path = usePathname();
+  const { isOpen, onOpenChange, onOpen } = useDisclosure();
 
   const { cartList, setCartList } = useContext(CartContext);
-  
   const [loading, setLoading] = useState(false);
+
   const isInCart = cartList.some((g) => g.id === game.id);
   const isPlaceholder = game.title === "See more";
-const isInAdminPage=path==='/dashboard/games'
+  const isInAdminPage = path === "/dashboard/games";
+
   const handleAddToCart = async () => {
     setLoading(true);
     await fetch("/api/orders", {
@@ -64,117 +63,159 @@ const isInAdminPage=path==='/dashboard/games'
     setLoading(false);
   };
 
+  if (isPlaceholder) {
+    return (
+      <Link
+        href="/games"
+        className="flex justify-center items-center w-full h-[300px] rounded-2xl glass-card border border-[var(--border-color)] hover:border-amber-500/50 transition-all duration-300 hover:-translate-y-1 text-lg font-bold text-amber-500 hover:text-amber-400 no-underline"
+      >
+        See More →
+      </Link>
+    );
+  }
+
   return (
     <>
-    <Card
-      className={`relative my-5 mx-2 w-full h-[340px] border border-amber-500/40 rounded-2xl overflow-hidden 
-      shadow-[0_0_20px_rgba(255,200,50,0.15)] transition-all duration-500 hover:scale-[1.02] 
-      hover:shadow-[0_0_35px_rgba(255,200,50,0.25)]`}
-    >
-      <div className="relative h-full w-full">
-        {!isPlaceholder ? (
+      <Card
+        className={`relative w-full h-[320px] overflow-hidden rounded-2xl border
+          ${isInCart
+            ? "border-amber-500/50 shadow-[0_0_24px_rgba(245,158,11,0.2)]"
+            : "border-[var(--border-color)] hover:border-amber-500/40 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-card-hover)]"
+          }
+          transition-all duration-300 hover:-translate-y-1`}
+        style={{ willChange: "transform" }}
+      >
+        {/* Game image */}
+        <div className="absolute inset-0">
           <Image
             removeWrapper
             alt={game.title}
             src={game.img_url}
-            className="object-cover w-full h-full brightness-90 hover:brightness-100 transition-all"
+            className="object-cover w-full h-full"
           />
-        ) : (
-          <Link
-            href="/games"
-            className="flex justify-center items-center w-full h-full text-2xl font-bold text-amber-400 hover:text-amber-300 transition-all"
-          >
-            See More +
-          </Link>
-        )}
+        </div>
 
-        {!isPlaceholder && <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />}
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-        {!isPlaceholder && (
-          <CardHeader className="absolute bottom-20 left-3 z-10 flex-col items-start">
-            <h3 className="text-white font-extrabold text-2xl uppercase tracking-wide drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
-              {game.title}
-            </h3>
-          </CardHeader>
-        )}
-      </div>
-
-      {!isPlaceholder && !isInAdminPage && (
-        <CardFooter className="absolute bottom-0 left-0 right-0 z-20  backdrop-blur-md flex justify-between items-center px-4 py-3">
-          <div className="flex gap-2">
-            {loading ? (
-              <Spinner size="sm" color="warning" />
-            ) : isInCart ? (
-              <Button
-                onPress={handleRemoveFromCart}
-                size="sm"
-                color="danger"
-                variant="shadow"
-                className="flex items-center gap-1"
-              >
-                <ShopIcon />
-                Remove
-              </Button>
-            ) : (
-              <Button
-                onPress={handleAddToCart}
-                size="sm"
-                color="primary"
-                variant="shadow"
-                className="flex items-center gap-1"
-              >
-                <ShopIcon />
-                Add
-              </Button>
-            )}
-
-            <Button
-              as={Link}
-              href={`/games/${game.id}`}
-              size="sm"
-              color="secondary"
-              variant="shadow"
-            >
-              Details
-            </Button>
-          </div>
-
-          <h2 className="text-lg font-bold text-amber-300 drop-shadow-[0_0_5px_rgba(255,200,50,0.4)]">
+        {/* Price badge (top right) */}
+        {!isInAdminPage && (
+          <div className="absolute top-3 right-3 z-10 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-sm border border-amber-500/30 text-amber-400 text-sm font-extrabold">
             ${game.price}
-          </h2>
-        </CardFooter>
-      )}
-      {isInAdminPage&&<Dropdown>
-        <DropdownTrigger><Button isIconOnly color="default"  variant="flat" className="absolute top-0 right-0"><EllipsisVertical></EllipsisVertical></Button></DropdownTrigger>
-     <DropdownMenu aria-label="Static Actions">
-   
-        <DropdownItem onPress={onOpen} startContent={<Pencil></Pencil>} key="edit" color="warning" variant="flat" >Edit Game</DropdownItem>
-        <DropdownItem onPress={async()=>{
-          const res=await fetch(`/api/games/${game.id}`,{
-            method:'DELETE'
-          })
-          const data= await res.json()
-          if(res?.ok && setGames){
-            setGames((prev)=>{
-              return prev.filter((game)=>game.id!=data?.game?.id)
-            })
-          }
+          </div>
+        )}
 
-          addToast({
-            title:data?.message||data?.error,
-            color:data?.message?'success':'danger',
-            variant:'flat'
-          })  
-          
-         
-        }} startContent={<XIcon></XIcon>} key="delete" className="text-danger"  variant='flat' color="danger">
-          Delete Game
-        </DropdownItem>
-      </DropdownMenu>
-      </Dropdown>}
-    </Card>
-    <UpdateModal setGames={setGames} game={game} isOpen={isOpen} onOpenChange={onOpenChange}></UpdateModal>
+        {/* In-cart badge */}
+        {isInCart && (
+          <div className="absolute top-3 left-3 z-10 px-2 py-0.5 rounded-full bg-amber-500 text-black text-xs font-bold">
+            In Cart
+          </div>
+        )}
+
+        {/* Title */}
+        <CardHeader className="absolute bottom-16 left-0 right-0 z-10 px-4 pb-0 flex-col items-start">
+          <h3 className="text-white font-extrabold text-lg uppercase tracking-wide leading-tight line-clamp-2"
+            style={{ textShadow: "0 2px 12px rgba(0,0,0,0.8)" }}
+          >
+            {game.title}
+          </h3>
+        </CardHeader>
+
+        {/* Footer actions */}
+        {!isInAdminPage && (
+          <CardFooter className="absolute bottom-0 left-0 right-0 z-20 backdrop-blur-md bg-black/30 border-t border-white/5 flex justify-between items-center px-4 py-2.5 gap-2">
+            <div className="flex gap-2">
+              {loading ? (
+                <Spinner size="sm" color="warning" />
+              ) : isInCart ? (
+                <Button
+                  onPress={handleRemoveFromCart}
+                  size="sm"
+                  color="danger"
+                  variant="flat"
+                  className="font-semibold rounded-lg text-xs"
+                  startContent={<ShopIcon />}
+                >
+                  Remove
+                </Button>
+              ) : (
+                <Button
+                  onPress={handleAddToCart}
+                  size="sm"
+                  color="warning"
+                  variant="solid"
+                  className="font-semibold rounded-lg text-xs text-black"
+                  startContent={<ShopIcon />}
+                >
+                  Add to Cart
+                </Button>
+              )}
+
+              <Button
+                as={Link}
+                href={`/games/${game.id}`}
+                size="sm"
+                variant="flat"
+                className="font-semibold rounded-lg text-xs text-white bg-white/10 hover:bg-white/20"
+                startContent={<Info className="w-3.5 h-3.5" />}
+              >
+                Details
+              </Button>
+            </div>
+          </CardFooter>
+        )}
+
+        {/* Admin dropdown */}
+        {isInAdminPage && (
+          <Dropdown>
+            <DropdownTrigger>
+              <Button
+                isIconOnly
+                color="default"
+                variant="flat"
+                className="absolute top-3 right-3 z-10 bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl"
+                size="sm"
+              >
+                <EllipsisVertical className="w-4 h-4" />
+              </Button>
+            </DropdownTrigger>
+            <DropdownMenu aria-label="Game actions">
+              <DropdownItem
+                onPress={onOpen}
+                startContent={<Pencil className="w-4 h-4" />}
+                key="edit"
+                color="warning"
+                variant="flat"
+              >
+                Edit Game
+              </DropdownItem>
+              <DropdownItem
+                onPress={async () => {
+                  const res = await fetch(`/api/games/${game.id}`, { method: "DELETE" });
+                  const data = await res.json();
+                  if (res?.ok && setGames) {
+                    setGames((prev) => prev.filter((g) => g.id !== data?.game?.id));
+                  }
+                  addToast({
+                    title: data?.message || data?.error,
+                    color: data?.message ? "success" : "danger",
+                    variant: "flat",
+                  });
+                }}
+                startContent={<XIcon className="w-4 h-4" />}
+                key="delete"
+                className="text-danger"
+                variant="flat"
+                color="danger"
+              >
+                Delete Game
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        )}
+      </Card>
+
+      <UpdateModal setGames={setGames} game={game} isOpen={isOpen} onOpenChange={onOpenChange} />
     </>
-
   );
 }

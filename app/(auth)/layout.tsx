@@ -1,15 +1,10 @@
 import "@/styles/globals.css";
 import { Providers } from "../(main)/providers";
-import { NavbarComponet } from "@/components/globalComponents/Navbar";
 import { inter } from "@/fonts";
-import {SessionProvider} from 'next-auth/react'
-import { auth } from "@/auth";
 import { ToastProvider } from "@heroui/react";
 
-export default  async function RootLayout({ children }: { children: React.ReactNode }) {
-    const session = await auth(); 
-    
-    return (
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
     <html
       className={`${inter.className} dark text-foreground bg-background`}
       suppressHydrationWarning
@@ -17,16 +12,15 @@ export default  async function RootLayout({ children }: { children: React.ReactN
       style={{ colorScheme: "dark" }}
     >
       <head>
-        <title>Document</title>
+        <link rel="icon" type="image/svg+xml" href="/cart.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="description" content="GameStore — Sign in to access your account." />
+        <title>GameStore — Login</title>
       </head>
-      <body className=" text-foreground m-0">
+      <body className="text-foreground m-0 bg-[var(--surface-1)]">
         <Providers>
-
-
           <div className="p-0">{children}</div>
-
         </Providers>
-
       </body>
     </html>
   );

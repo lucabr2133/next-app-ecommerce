@@ -1,207 +1,209 @@
 "use client"
-import { Table, TableBody, TableColumn,TableCell,TableHeader,TableRow, Divider, Card, CardHeader, CardBody, CardFooter, Button, Chip, Modal, ModalContent, ModalBody, useDisclosure, ModalHeader, Form, Image, ModalFooter, Spinner } from "@heroui/react";
-import { Car } from "lucide-react";
+import { Table, TableBody, TableColumn, TableCell, TableHeader, TableRow, Divider, Card, CardBody, Button, Chip, Modal, ModalContent, ModalBody, useDisclosure, ModalHeader, Image, ModalFooter, Spinner } from "@heroui/react";
+import { PackageSearch, Eye, Calendar, User, CheckCircle2 } from "lucide-react";
 import postgres from "postgres";
 import { Suspense, useCallback, useState } from "react";
 
 export function MainOrders({orders}:{orders:postgres.Row[]}){
-    const {isOpen,onOpen,onOpenChange} =useDisclosure()
-    const [currentOrder,setCurrentOrder]=useState<postgres.Row|null>(null)
-    const [currentGames,setCurrentGames]=useState<postgres.Row[]|null>(null)
-    const renderCell=useCallback((order:postgres.Row,columkey:string)=>{
-        const cell=order[columkey]
+    const {isOpen, onOpen, onOpenChange} = useDisclosure()
+    const [currentOrder, setCurrentOrder] = useState<postgres.Row|null>(null)
+    const [currentGames, setCurrentGames] = useState<postgres.Row[]|null>(null)
+    const [isLoadingDetails, setIsLoadingDetails] = useState(false)
+    
+    const renderCell = useCallback((order:postgres.Row, columkey:string)=>{
+        const cell = order[columkey]
         switch (columkey){
             case 'id':
-                return <div >{cell}</div>
+                return <span className="font-mono text-xs">{cell}</span>
             case 'user_id':
-                return <div>{cell}</div>
+                return <span className="text-sm">{cell}</span>
             case 'status':
-                return <div>{cell}</div>
+                return (
+                    <Chip size="sm" variant="flat" color={cell === 'paid' ? 'success' : 'warning'} className="capitalize">
+                        {cell}
+                    </Chip>
+                )
             case 'created_at':
-                return <div>{cell}</div>
+                return <span className="text-sm text-default-500">{new Date(cell).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric'})}</span>
             case 'username':
-                return <div>{cell}</div>
+                return <span className="font-medium text-sm">{cell}</span>
             case 'action':
-                return <div className="flex gap-4 w-full">
-                    <Button color="primary" variant="flat" onPress={async()=>{
-                        setCurrentOrder(order)
-                        onOpen()
-                        const gamesOrder= await fetch(`/api/checkout/success?orderId=${order?.id}`,{
-                          credentials:'include'
-                        })
-                        const dataGames= await gamesOrder.json()
-                        
-                        if(dataGames?.error){
-                        setCurrentGames([])
-
-                        }else{
-                        setCurrentGames(dataGames)
-
-                        }
-                    }}>View Details</Button>
-
-                </div>
+                return (
+                    <div className="flex gap-4 w-full">
+                        <Button 
+                            size="sm" 
+                            color="primary" 
+                            variant="flat" 
+                            startContent={<Eye className="w-4 h-4" />}
+                            onPress={async()=>{
+                                setCurrentOrder(order)
+                                setCurrentGames(null)
+                                setIsLoadingDetails(true)
+                                onOpen()
+                                const gamesOrder = await fetch(`/api/checkout/success?orderId=${order?.id}`, {
+                                    credentials: 'include'
+                                })
+                                const dataGames = await gamesOrder.json()
+                                
+                                if(dataGames?.error){
+                                    setCurrentGames([])
+                                } else {
+                                    setCurrentGames(dataGames)
+                                }
+                                setIsLoadingDetails(false)
+                            }}
+                        >
+                            View Details
+                        </Button>
+                    </div>
+                )
         }
+    }, [orders, onOpen])
+    
+    const keys = orders.length > 0 ? Object.keys(orders[0]) : [];
+    if (!keys.includes('action')) {
+        keys.push('action');
+    }
 
-    },[orders])
-    const keys=Object.keys(orders[0])
-    keys.push('action')
-
-return (
-  <Suspense fallback={<Spinner></Spinner>}>
-
-  <main className="min-h-screen w-full flex flex-col px-10 py-8 gap-8 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
-    {/* Header */}
-    <div className="flex items-center justify-between">
-      <h2 className="text-4xl font-semibold text-gray-800 dark:text-gray-100">
-        Orders
-      </h2>
-      <button className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition">
-        + New Order
-      </button>
-    </div>
-
-    <Divider className="opacity-70" />
-
-    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-800">
-      <Table
-        aria-label="Orders Table"
-        className="w-full"
-        isStriped
-      >
-        <TableHeader>
-          {keys.map((key) => (
-            <TableColumn
-              key={key}
-              className="uppercase text-xs font-semibold tracking-wider text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800"
-            >
-              {key}
-            </TableColumn>
-          ))}
-        </TableHeader>
-
-        <TableBody emptyContent={"No orders found"} items={orders}>
-          {(item) => (
-            <TableRow
-              key={item.id}
-              className="hover:bg-gray-50 dark:hover:bg-gray-800 transition"
-            >
-              {(columnKey) => (
-                <TableCell className="p-5 text-gray-700 dark:text-gray-200">
-                  {renderCell(item, String(columnKey))}
-                </TableCell>
-              )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </div>
-<Modal onOpenChange={onOpenChange} isOpen={isOpen} onClose={()=>{
-    setCurrentOrder(null)
-}}>
-        <ModalContent className="min-w-1/2 min-h-3/4">
-            {(onclose)=>(
-                <>
-                <ModalHeader>
-                      <div className="flex gap-5 justify-between w-full">
-                    Order details
-                    
-                    <h2>Id: {currentOrder?.id}</h2>
-                    <h2>Date: {new Date(currentOrder?.created_at).toLocaleDateString()}</h2>
-                   
-               </div>
-                    </ModalHeader>
-             <Divider></Divider>
-
-                <ModalBody className="h-full">
-                   <div key={currentOrder?.id} className="flex flex-col gap-5">
-                    <span className="flex  flex-col items-center">
-       
-                        <h2  className="text font-extrabold uppercase text-3xl" >User:  {currentOrder?.username}</h2>
-                    </span>
-                    <span className="flex gap-5 flex-col">
-                        {currentGames?.map(game=>(
-                            <Card key={game.id} className=" bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 border-1" >
-                                <CardBody className="flex w-full flex-row  gap-5">
-                                    <Image width={400}   src={game.img_url}></Image>
-                                    <div className="flex flex-col w-full">
-                                    <div className="flex justify-between h-full w-full ">
-                                        <h2 className="text font-extrabold uppercase text-2x1">{game.title}</h2>
-                                        <h2 className="text font-extrabold uppercase text-2x1">${game.price}</h2>
-                                        
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <h2>Game key:</h2>
-                                        <Chip color="success" variant="flat"> {game.code_key}</Chip>
-                                    </div>
-                                    </div>
-                                 
-                                </CardBody>
-                            </Card>
-                        ))}
-                    </span>
-      
-
-          
-                    </div>
-                    <Divider></Divider>
-                </ModalBody>
-                <ModalFooter className="w-full">
-                      <div className="p-6 flex flex-col gap-5 w-full">
-                        <div className="flex justify-between w-full">
-                        <h2 className=" uppercase text-2xl">Status:</h2>
-                         <Chip color="success" variant="flat">
-                                    {currentOrder?.status}
-                        </Chip>
-
-                    </div>
-
-                    <div className="w-full flex justify-between">
-                        <h2 className=" uppercase text-2xl">Total:</h2>
-
-                        <h2>Total Order: ${currentGames?.reduce((prev,current)=>prev+parseFloat(current.price),0)}</h2>
-
-                    </div>
-                    </div>
-                </ModalFooter>
-                
-                </>
+    return (
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Spinner size="lg" color="primary" /></div>}>
+        <main className="min-h-screen p-4 md:p-10 w-full flex flex-col gap-8 bg-background relative overflow-hidden">
+            {/* Ambient Background Effects */}
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-warning/10 rounded-full blur-[120px] pointer-events-none -z-10" />
             
-            )}
-        </ModalContent>
-    </Modal>
+            <header className="flex flex-col gap-2">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-warning/10 rounded-xl">
+                        <PackageSearch className="text-warning-500 w-6 h-6" />
+                    </div>
+                    <h2 className="font-bold text-3xl tracking-tight">Orders Management</h2>
+                </div>
+                <p className="text-default-500 text-sm pl-12">Review and manage customer purchases</p>
+                <Divider className="my-4 opacity-50" />
+            </header>
 
-  </main>
-  </Suspense>
+            <div className="w-full bg-content1/40 backdrop-blur-md rounded-2xl shadow-sm border border-default-200/50">
+                <Table
+                    aria-label="Orders Table"
+                    className="w-full"
+                    isStriped={false}
+                    removeWrapper
+                    classNames={{
+                        th: "bg-default-100/50 text-default-500 text-xs font-bold uppercase tracking-wider",
+                        td: "py-4 border-b border-default-100 last:border-b-0"
+                    }}
+                >
+                    <TableHeader>
+                        {keys.map((key) => (
+                            <TableColumn key={key}>
+                                {key.replace('_', ' ')}
+                            </TableColumn>
+                        ))}
+                    </TableHeader>
 
-);
+                    <TableBody emptyContent={"No orders found"} items={orders}>
+                        {(item) => (
+                            <TableRow key={item.id} className="hover:bg-default-50/50 transition-colors">
+                                {(columnKey) => (
+                                    <TableCell>
+                                        {renderCell(item, String(columnKey))}
+                                    </TableCell>
+                                )}
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
 
+            <Modal 
+                onOpenChange={onOpenChange} 
+                isOpen={isOpen} 
+                onClose={()=>{
+                    setCurrentOrder(null)
+                    setCurrentGames(null)
+                }}
+                backdrop="blur"
+                scrollBehavior="inside"
+                classNames={{
+                    base: "bg-content1/80 backdrop-blur-md border border-default-200/50",
+                    header: "border-b border-default-200/50 bg-default-50/30",
+                    footer: "border-t border-default-200/50 bg-default-50/30"
+                }}
+            >
+                <ModalContent className="sm:max-w-[700px]">
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1 p-6">
+                                <div className="flex items-center gap-2">
+                                    <h3 className="font-bold text-xl">Order Receipt</h3>
+                                    <Chip size="sm" variant="flat" color={currentOrder?.status === 'paid' ? 'success' : 'warning'} className="capitalize ml-2">
+                                        {currentOrder?.status}
+                                    </Chip>
+                                </div>
+                                <div className="flex flex-wrap gap-x-6 gap-y-2 mt-4 text-sm text-default-500">
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="font-mono text-xs p-1 bg-default-100 rounded-md">ID: {currentOrder?.id}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <Calendar className="w-4 h-4" />
+                                        <span>{currentOrder?.created_at ? new Date(currentOrder.created_at).toLocaleString() : ''}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <User className="w-4 h-4" />
+                                        <span>{currentOrder?.username}</span>
+                                    </div>
+                                </div>
+                            </ModalHeader>
+                    
+                            <ModalBody className="p-6">
+                                <h4 className="font-semibold text-sm uppercase tracking-wider text-default-500 mb-2">Purchased Items</h4>
+                                {isLoadingDetails ? (
+                                    <div className="flex justify-center py-10"><Spinner color="primary" /></div>
+                                ) : currentGames?.length === 0 ? (
+                                    <p className="text-default-500 text-center py-4">No items found for this order.</p>
+                                ) : (
+                                    <div className="flex flex-col gap-3">
+                                        {currentGames?.map(game => (
+                                            <Card key={game.id} className="bg-default-50/50 shadow-none border border-default-200/40">
+                                                <CardBody className="p-3 flex flex-row gap-4 items-center">
+                                                    <Image 
+                                                        alt={game.title}
+                                                        className="object-cover w-20 h-20 rounded-lg shadow-sm" 
+                                                        src={game.img_url}
+                                                    />
+                                                    <div className="flex flex-col flex-1 justify-between h-full py-1">
+                                                        <div className="flex justify-between items-start w-full">
+                                                            <h2 className="font-bold text-md leading-tight">{game.title}</h2>
+                                                            <span className="font-bold text-md">${game.price}</span>
+                                                        </div>
+                                                        <div className="flex items-center justify-between mt-auto pt-2 border-t border-default-200/30">
+                                                            <span className="text-xs font-medium text-default-500">Activation Key:</span>
+                                                            <Chip size="sm" color="success" variant="flat" startContent={<CheckCircle2 className="w-3 h-3 ml-1" />}> 
+                                                                <span className="font-mono">{game.code_key}</span>
+                                                            </Chip>
+                                                        </div>
+                                                    </div>
+                                                </CardBody>
+                                            </Card>
+                                        ))}
+                                    </div>
+                                )}
+                            </ModalBody>
+                            
+                            <ModalFooter className="p-6 flex justify-between items-center bg-default-50/50">
+                                <span className="text-default-500 text-sm">Payment processed</span>
+                                <div className="flex items-center gap-3">
+                                    <span className="text-sm font-medium uppercase tracking-wider text-default-500">Total</span>
+                                    <span className="text-2xl font-bold">
+                                        ${currentGames?.reduce((prev, current) => prev + parseFloat(current.price), 0).toFixed(2) || '0.00'}
+                                    </span>
+                                </div>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
+        </main>
+      </Suspense>
+    );
 }
-//        <div className="grid grid-cols-3 gap-5">
-  
-//  {orders.map(order=>{
-//         return <Card key={order.id}>
-//             <CardHeader className="flex justify-between ">
-//                 <div className="flex gap-5 ">
-                    
-//                     <h2>{order.id}</h2>
-//                     <h2>{new Date(order.created_at).toLocaleDateString()}</h2>
-                    
-//                 </div>
-//                 <Chip color="success" variant="flat">
-//                 {order.status}
-
-//                 </Chip>
-//             </CardHeader>
-//             <Divider></Divider>
-//             <CardBody>
-//                 {order.username}
-//             </CardBody>
-//             <CardFooter>
-//                 <Button variant="flat" color="success">
-//                     View Details
-//                 </Button>
-//             </CardFooter>
-//         </Card>
-//        })}
-//        </div>

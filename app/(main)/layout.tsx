@@ -11,10 +11,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <head>
-          <link  rel="icon" type="image/svg+xml" href="/cart.svg" />
-
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>My ecommerce</title>
+        <link rel="icon" type="image/svg+xml" href="/cart.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="description" content="GameStore — Browse, discover, and buy the best games online." />
+        <title>GameStore — Your Next Gaming Adventure</title>
       </head>
       <body className="bg-background text-foreground m-0">
         <Providers>

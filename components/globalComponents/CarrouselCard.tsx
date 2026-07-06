@@ -3,89 +3,109 @@
 import { useState, useEffect } from "react";
 import { Games } from "@/types/database";
 import { ProductCart } from "./Card";
-import { Card, CardBody, Button, Divider } from "@heroui/react";
+import { Button } from "@heroui/react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export function CarouselCard({ games }: { games: Games[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [cardsPerView, setCardsPerView] = useState(3);
 
-  const updatedGames = [...games, {
-    id: "11",
-    title: "See more",
-    create_at: new Date(),
-    description: "",
-    id_developer: "",
-    id_platform: "",
-    img_url: "",
-    metacritic: 0,
-    price: 70,
-    release_at: new Date(),
-    stock: 0,
-    updated_at: new Date()
-  }];
+  const updatedGames = [
+    ...games,
+    {
+      id: "11",
+      title: "See more",
+      create_at: new Date(),
+      description: "",
+      id_developer: "",
+      id_platform: "",
+      img_url: "",
+      metacritic: 0,
+      price: 70,
+      release_at: new Date(),
+      stock: 0,
+      updated_at: new Date(),
+    },
+  ];
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 640) setCardsPerView(1);      
-      else if (window.innerWidth < 1024) setCardsPerView(2); 
-      else setCardsPerView(3);                              
+      if (window.innerWidth < 640) setCardsPerView(1);
+      else if (window.innerWidth < 1024) setCardsPerView(2);
+      else setCardsPerView(3);
     };
-    handleResize(); // ejecutar al montar
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const gameLength= updatedGames.length - cardsPerView;
-  
+  const gameLength = updatedGames.length - cardsPerView;
+
   const next = () => {
-    if (currentIndex < gameLength) {
-      setCurrentIndex(currentIndex + 1);
-    }
+    if (currentIndex < gameLength) setCurrentIndex((p) => p + 1);
   };
 
   const previous = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    }
+    if (currentIndex > 0) setCurrentIndex((p) => p - 1);
   };
 
   return (
-    <Card className="bg-transparent w-full overflow-hidden">
-      <CardBody className="flex justify-between items-center flex-row gap-2 sm:gap-4">
+    <div className="relative w-full">
+      {/* Navigation + cards row */}
+      <div className="flex items-center gap-3">
         <Button
-          variant="ghost"
-          color="primary"
           isIconOnly
-          isDisabled={currentIndex === 0}
+          variant="flat"
           onPress={previous}
+          isDisabled={currentIndex === 0}
+          size="sm"
+          className="rounded-xl bg-[var(--surface-3)] hover:bg-amber-500/15 hover:text-amber-500 transition-colors flex-shrink-0"
+          aria-label="Previous"
         >
-          {"<"}
+          <ChevronLeft className="w-4 h-4" />
         </Button>
 
-        <div className="flex flex-row justify-center items-center w-full gap-4">
+        <div className="flex-1 grid gap-4"
+          style={{
+            gridTemplateColumns: `repeat(${cardsPerView}, minmax(0, 1fr))`,
+          }}
+        >
           {updatedGames
             .slice(currentIndex, currentIndex + cardsPerView)
             .map((game) => (
-              <div
-                key={game.id}
-                className="flex-1 min-w-[200px] "
-              >
-                <ProductCart setGames={null} game={game} />
-              </div>
+              <ProductCart key={game.id} setGames={null} game={game} />
             ))}
         </div>
 
         <Button
-          variant="ghost"
-          color="primary"
           isIconOnly
-          isDisabled={currentIndex >= gameLength}
+          variant="flat"
           onPress={next}
+          isDisabled={currentIndex >= gameLength}
+          size="sm"
+          className="rounded-xl bg-[var(--surface-3)] hover:bg-amber-500/15 hover:text-amber-500 transition-colors flex-shrink-0"
+          aria-label="Next"
         >
-          {">"}
+          <ChevronRight className="w-4 h-4" />
         </Button>
-      </CardBody>
-      <Divider></Divider>
-    </Card>
+      </div>
+
+      {/* Progress dots */}
+      <div className="flex justify-center gap-1.5 mt-4">
+        {Array.from({ length: Math.max(1, gameLength + 1) }).map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrentIndex(i)}
+            aria-label={`Go to slide ${i + 1}`}
+            className="border-0 cursor-pointer rounded-full transition-all duration-300"
+            style={{
+              width: i === currentIndex ? "20px" : "6px",
+              height: "6px",
+              background: i === currentIndex ? "#f59e0b" : "var(--border-color)",
+            }}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
