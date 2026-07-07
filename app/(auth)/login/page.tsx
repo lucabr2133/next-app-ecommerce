@@ -1,37 +1,41 @@
 "use client"
 import { Button, Form, Input, Link } from "@heroui/react";
-
 import { useSearchParams } from "next/navigation";
 import { authenticate } from "@/lib/authenticate";
-import { useActionState } from "react";
+import { useActionState, Suspense } from "react";
 
-export  default function LoginPage(){
-     const searchParams = useSearchParams();
+function LoginForm() {
+  const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
-  const [state,formAction]=useActionState(authenticate,undefined)
+  const [state, formAction] = useActionState(authenticate, undefined);
 
-return <>
+  return (
     <main className="h-screen flex items-center justify-center">
-        <Form className="min-w-1/4 flex  gap-5 border-1 p-12 rounded-2xl " action={formAction}>
+        <Form className="min-w-1/4 flex gap-5 border-1 p-12 rounded-2xl" action={formAction}>
         <h2 className="text-center">Log in</h2>
         <Input placeholder="username" name="username" label='type your user'></Input>
-        <Input placeholder="password" name="password" label='type your password'></Input>
+        <Input placeholder="password" name="password" label='type your password' type="password"></Input>
           <input type="hidden" name="redirectTo" value={callbackUrl} />
         <Button type="submit" color="primary">Send</Button>
       
           <Link href='/sign'>Sign up</Link>
-          <Button onPress={(e)=>{
-            const fomrdata=new FormData()
+          <Button onPress={()=>{
+            const fomrdata = new FormData()
             fomrdata.append('username','adminGuest')
             fomrdata.append('password','adminGuest')
             fomrdata.append('email','guestAdminUser@gmail.com')
             formAction(fomrdata)
-            
           }}>Enter as Admin guest</Button>
 
     </Form>
-
     </main>
-    
-</>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="h-screen flex items-center justify-center">Loading...</div>}>
+      <LoginForm />
+    </Suspense>
+  );
 }
