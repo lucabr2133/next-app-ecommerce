@@ -1,20 +1,21 @@
 import { Games, Genres } from "@/types/database";
 import { MainHome } from "@/components/globalComponents/Main";
-import { useMemo } from "react";
-export default async function page(){
-    const url=process.env.NEXT_PUBLIC_API_URL
-    const newGames= await fetch(`${url}/api/games?quantity=10`)
-    const GamesResponse= await fetch(`${url}/api/games?quantity=27`)
+import { sql } from "@/supabase";
 
-    const data:Games[]= await newGames.json()
-    const data30Games:Games[]=await GamesResponse.json()
+export const dynamic = "force-dynamic";
 
-    const genres= await fetch(`${url}/api/genres`)
-    const dataGenres:Genres[]= await genres.json()
-    return <>
-       
-       <MainHome dataGenres={dataGenres} data={data} data30Games={data30Games} >
+export default async function HomePage() {
+  const [data, data30Games, dataGenres] = await Promise.all([
+    sql<Games[]>`SELECT * FROM games ORDER BY release_at DESC LIMIT 10`,
+    sql<Games[]>`SELECT * FROM games ORDER BY release_at DESC LIMIT 27`,
+    sql<Genres[]>`SELECT id, name FROM genres`,
+  ]);
 
-       </MainHome>
-    </>
+  return (
+    <MainHome
+      data={data}
+      data30Games={data30Games}
+      dataGenres={dataGenres}
+    />
+  );
 }

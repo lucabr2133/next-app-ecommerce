@@ -1,12 +1,13 @@
-import MainGamesAdmin from "@/components/dashboardComponents/games/MainGamesAdmin"
+import MainGamesAdmin from "@/components/dashboardComponents/games/MainGamesAdmin";
+import { sql } from "@/supabase";
+import { Games } from "@/types/database";
 
-export  default async function pageGame(){
-    const url=process.env.NEXT_PUBLIC_API_URL
+export const dynamic = "force-dynamic";
 
-    const gamesResponse=await fetch(`${url}/api/games?quantity=all`)
-    
-    const data= await gamesResponse.json()
-    return <>
-        <MainGamesAdmin games={data}></MainGamesAdmin>
-    </>
+export default async function PageGame() {
+  const data = await sql<Games[]>`
+    SELECT * FROM games ORDER BY release_at DESC
+  `;
+
+  return <MainGamesAdmin games={data} />;
 }

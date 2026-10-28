@@ -1,29 +1,21 @@
-import "@/styles/globals.css";
-import { Providers } from "./providers";
+import React from "react";
+
 import { NavbarComponet } from "@/components/globalComponents/Navbar";
-import { inter } from "@/fonts";
 import { CartProvider } from "./contex/cartProvider";
 import { auth } from "@/auth";
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function MainLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const session = await auth();
 
   return (
-    <html lang="en" className={inter.className} suppressHydrationWarning>
-      <head>
-        <link rel="icon" type="image/svg+xml" href="/cart.svg" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="description" content="GameStore — Browse, discover, and buy the best games online." />
-        <title>GameStore — Your Next Gaming Adventure</title>
-      </head>
-      <body className="bg-background text-foreground m-0">
-        <Providers>
-          <CartProvider>
-            <NavbarComponet session={session} />
-            <main className="p-0">{children}</main>
-          </CartProvider>
-        </Providers>
-      </body>
-    </html>
+    <CartProvider>
+      <NavbarComponet session={session} />
+      <main className="p-0">{children}</main>
+    </CartProvider>
   );
 }
+

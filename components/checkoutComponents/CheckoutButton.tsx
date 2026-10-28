@@ -1,32 +1,60 @@
 "use client";
-import { loadStripe } from "@stripe/stripe-js";
 
-// inicializa Stripe con tu clave pública
-const stripePromise = loadStripe(
-  process.env.STRIPE_PUBLIC_KEY!
-);
+import { useState } from "react";
+import { Button, addToast } from "@heroui/react";
+import { ArrowRight } from "lucide-react";
 
-export default function CheckoutButton({ games }: { games: any[] }) {
+import { Games } from "@/types/database";
+
+export default function CheckoutButton({ games }: { games: Games[] }) {
+  const [loading, setLoading] = useState(false);
+
   const handleCheckout = async () => {
-    const res = await fetch("/api/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ games }),
-    });
+    if (!games || games.length === 0) return;
 
-    const data = await res.json();
-  
+    setLoading(true);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ games }),
+      });
 
-    window.location=data.url
-    
+      const data = await res.json();
+
+      if (!res.ok || !data?.url) {
+        addToast({
+          title: data?.error || "Please sign in to complete checkout",
+          color: "warning",
+          variant: "flat",
+        });
+
+        return;
+      }
+
+      window.location.href = data.url;
+    } catch (err) {
+      console.error(err);
+      addToast({
+        title: "Failed to start checkout",
+        color: "danger",
+        variant: "flat",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <button
-      onClick={handleCheckout}
-      className="bg-blue-600 text-white px-4 py-2 rounded"
+    <Button
+      fullWidth
+      className="rounded-xl font-semibold text-sm bg-[var(--text-primary)] text-[var(--surface-1)] hover:opacity-90 transition-opacity"
+      endContent={<ArrowRight className="w-4 h-4" />}
+      isDisabled={!games || games.length === 0}
+      isLoading={loading}
+      onPress={handleCheckout}
     >
-      Buy now!
-    </button>
+      Proceed to Checkout
+    </Button>
   );
 }

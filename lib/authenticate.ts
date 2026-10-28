@@ -1,25 +1,31 @@
 "use server";
 
-import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
 
-export async function authenticate(prevState:string|undefined,formData: FormData) {
+import { signIn } from "@/auth";
+
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData
+) {
   try {
-   const result = await signIn("credentials", {
-      ...Object.fromEntries(formData),       // username, password, etc
-      redirect: true,                         // NextAuth redirige automáticamente
-      callbackUrl:  "/",
+    const redirectTo = (formData.get("redirectTo") as string) || "/";
+
+    await signIn("credentials", {
+      username: formData.get("username"),
+      password: formData.get("password"),
+      redirectTo,
     });
-    return result
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
         case "CredentialsSignin":
-          return "Invalid credentials.";
+          return "Invalid username or password.";
         default:
-          return "Something went wrong.";
+          return "Something went wrong. Please try again.";
       }
     }
     throw error;
   }
 }
+

@@ -1,113 +1,202 @@
+import { createClient } from "@supabase/supabase-js";
+import { z } from "zod";
+
 import { validateSchema } from "@/app/(main)/schemas";
 import { auth } from "@/auth";
 import { sql } from "@/supabase";
-import { createClient } from '@supabase/supabase-js'
-import {z} from 'zod'
-const supabase=createClient(process.env.SUPABASE_URL as string,process.env.SUPABASE_SERVICE_ROLE_KEY as string)
+
+const supabase = createClient(
+  (process.env.SUPABASE_URL || "https://placeholder.supabase.co") as string,
+  (process.env.SUPABASE_SERVICE_ROLE_KEY || "placeholder") as string
+);
+
 export async function GET(request: Request) {
   const url = new URL(request.url);
 
   const order = url.searchParams.get("order") ?? "release_at";
   const quantity = url.searchParams.get("quantity");
-const genre= url.searchParams.get('genre')
-const search= url.searchParams.get('search')
-  const validOrders = ["release_at", "rating", "price"];
+  const rawGenre = url.searchParams.get("genre");
+  const rawSearch = url.searchParams.get("search");
+
+  const genre = rawGenre && rawGenre !== "undefined" ? rawGenre : null;
+  const search = rawSearch && rawSearch !== "undefined" ? rawSearch : null;
+
+  const validOrders = ["release_at", "rating", "price", "metacritic", "title"];
+
   if (!validOrders.includes(order)) {
-    return new Response(JSON.stringify({ error: "Invalid order parameter" }), { status: 400 });
+    return Response.json({ error: "Invalid order parameter" }, { status: 400 });
   }
 
-  let query = sql`
-    SELECT * FROM games
-    ORDER BY ${sql(order)} DESC
-  `;
-
-  if (quantity && quantity !== "all" && Number(quantity) > 0) {
-    query = sql`
-      SELECT DISTINCT * FROM games
-      ORDER BY ${sql(order)} DESC
-      LIMIT ${Number(quantity)}
-    `;
-  }
-  if(genre && genre!='undefined'){
-    console.log(genre,'a');
-    
-query = sql`
-  SELECT DISTINCT g.*
-  FROM games g
-  INNER JOIN genre_games gg
-    ON g.id = gg.game_id
-  WHERE gg.genre_id = ${genre}
-`;
-  }
-if (search&&search !== 'undefined' ) {
-
-  query = sql`
-    SELECT DISTINCT g.*
-    FROM games g
-    WHERE  g.title ILIKE ${search + '%'}
-  `;
-}
-if(search && search !== 'undefined'&&genre && genre!='undefined'){
-  
-  query = sql`
-    SELECT DISTINCT g.*
-    FROM games g
-    INNER JOIN genre_games
-    ON genre_games.game_id=g.id
-    WHERE genre_games.genre_id=${genre}
-    AND g.title ILIKE ${search + '%'}
-  `;
-}
-  // Ejecutar la consulta
-  const data = await query;
-  
-  return Response.json(data);
-}
-export async function POST(request:Request) {
-   const session=await auth()
-      if(!session?.user)return Response.json({error:'Unauthorized'},{status:403})
-  const formdata=await request.formData()
-  const file = formdata.get("file") as File ;
-        if (!file) {
-      return Response.json({ error: "No se envió ninguna imagen" }, { status: 400 });
-    }
- const validateFormSchema=validateSchema(formdata)
- if(!validateFormSchema.success){
-  const flaterned=z.flattenError(validateFormSchema.error)
-  return Response.json({success:false,errors:flaterned},{status:400})
- }
-  const filePath = `uploads/${Date.now()}-${file?.name}`;
-  const validateData=validateFormSchema.data
   try {
-      const { data, error } = await supabase.storage.from("games").upload(filePath, file);
-      if (error) throw error;
-      const companyName =validateData.company_name.charAt(0).toUpperCase() +validateData.company_name.slice(1).toLowerCase();
-      let [company] = await sql` SELECT * FROM companies WHERE name = ${companyName};`;
-      if (!company) {
+    const hasLimit = quantity && quantity !== "all" && Number(quantity) > 0;
+    const limitVal = hasLimit ? Number(quantity) : null;
+
+    let data;
+
+    if (genre && search) {
+      data = limitVal
+        ? await sql`
+            SELECT DISTINCT g.*
+            FROM games g
+            INNER JOIN genre_games gg ON gg.game_id = g.id
+            WHERE gg.genre_id = ${genre}
+              AND g.title ILIKE ${"%" + search + "%"}
+            ORDER BY ${sql(order)} DESC
+            LIMIT ${limitVal}
+          `
+        : await sql`
+            SELECT DISTINCT g.*
+            FROM games g
+            INNER JOIN genre_games gg ON gg.game_id = g.id
+            WHERE gg.genre_id = ${genre}
+              AND g.title ILIKE ${"%" + search + "%"}
+            ORDER BY ${sql(order)} DESC
+          `;
+    } else if (genre) {
+      data = limitVal
+        ? await sql`
+            SELECT DISTINCT g.*
+            FROM games g
+            INNER JOIN genre_games gg ON gg.game_id = g.id
+            WHERE gg.genre_id = ${genre}
+            ORDER BY ${sql(order)} DESC
+            LIMIT ${limitVal}
+          `
+        : await sql`
+            SELECT DISTINCT g.*
+            FROM games g
+            INNER JOIN genre_games gg ON gg.game_id = g.id
+            WHERE gg.genre_id = ${genre}
+            ORDER BY ${sql(order)} DESC
+          `;
+    } else if (search) {
+      data = limitVal
+        ? await sql`
+            SELECT DISTINCT g.*
+            FROM games g
+            WHERE g.title ILIKE ${"%" + search + "%"}
+            ORDER BY ${sql(order)} DESC
+            LIMIT ${limitVal}
+          `
+        : await sql`
+            SELECT DISTINCT g.*
+            FROM games g
+            WHERE g.title ILIKE ${"%" + search + "%"}
+            ORDER BY ${sql(order)} DESC
+          `;
+    } else {
+      data = limitVal
+        ? await sql`
+            SELECT DISTINCT * FROM games
+            ORDER BY ${sql(order)} DESC
+            LIMIT ${limitVal}
+          `
+        : await sql`
+            SELECT * FROM games
+            ORDER BY ${sql(order)} DESC
+          `;
+    }
+
+    return Response.json(data);
+  } catch (error) {
+    console.error("Error fetching games:", error);
+
+    return Response.json({ error: "Failed to fetch games" }, { status: 500 });
+  }
+}
+
+export async function POST(request: Request) {
+  const session = await auth();
+
+  if (session?.user?.role !== "admin") {
+    return Response.json({ error: "Unauthorized" }, { status: 403 });
+  }
+
+  const formdata = await request.formData();
+  const file = formdata.get("file") as File | null;
+
+  if (!file || file.size === 0) {
+    return Response.json(
+      { success: false, error: "Please provide a cover image" },
+      { status: 400 }
+    );
+  }
+
+  const validateFormSchema = validateSchema(formdata);
+
+  if (!validateFormSchema.success) {
+    const flattened = z.flattenError(validateFormSchema.error);
+
+    return Response.json(
+      { success: false, errors: flattened },
+      { status: 400 }
+    );
+  }
+
+  const filePath = `uploads/${Date.now()}-${file.name}`;
+  const validateData = validateFormSchema.data;
+
+  try {
+    const { data, error } = await supabase.storage
+      .from("games")
+      .upload(filePath, file);
+
+    if (error) throw error;
+
+    const companyName =
+      validateData.company_name.charAt(0).toUpperCase() +
+      validateData.company_name.slice(1).toLowerCase();
+
+    let [company] = await sql`
+      SELECT * FROM companies WHERE name = ${companyName};
+    `;
+
+    if (!company) {
       const result = await sql`
         INSERT INTO companies (name)
         VALUES (${companyName})
         ON CONFLICT (name) DO NOTHING
         RETURNING *;
       `;
-       company = result[0];
-}
-      const { data: publicUrl } = supabase.storage.from("games").getPublicUrl(filePath);
-     const game= await sql`insert into games (company_id,title,description,price,release_at,stock,updated_at,metacritic,img_url) values (
-              ${company.id},${validateData.title},${validateData.description},
-              ${(validateData.price)},${new Date(validateData.release_at)},${validateData.stock},${new Date(validateData.updated_at)},
-              ${(validateData.metacritic)},${publicUrl.publicUrl }
-           ) RETURNING *`
-           
-      return Response.json(
-      {
-      message:"game created succesfully",
-      url:data?.path,
-      game:game[0]
-      },{status:200})
-      } catch (error) {
-         console.error(error);
-    return Response.json({ error: "Error Uploading the imgae" }, { status: 500 });
-      }
 
+      company = result[0];
+    }
+
+    const { data: publicUrl } = supabase.storage
+      .from("games")
+      .getPublicUrl(filePath);
+
+    const game = await sql`
+      INSERT INTO games (company_id, title, description, price, release_at, stock, updated_at, metacritic, img_url)
+      VALUES (
+        ${company.id},
+        ${validateData.title},
+        ${validateData.description},
+        ${validateData.price},
+        ${new Date(validateData.release_at)},
+        ${validateData.stock},
+        ${new Date(validateData.updated_at)},
+        ${validateData.metacritic},
+        ${publicUrl.publicUrl}
+      )
+      RETURNING *
+    `;
+
+    return Response.json(
+      {
+        success: true,
+        message: "Game created successfully",
+        url: data?.path,
+        game: game[0],
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error(error);
+
+    return Response.json(
+      { success: false, error: "Error uploading the image or creating game" },
+      { status: 500 }
+    );
+  }
 }

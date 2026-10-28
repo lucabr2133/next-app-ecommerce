@@ -1,36 +1,64 @@
-import { sql } from "@/supabase"
-import { error } from "console"
+import { auth } from "@/auth";
+import { sql } from "@/supabase";
 
-export async function  PATCH(request:Request,{params}:{params:Promise<{userId:string}>}){
-    const {userId}=await params
-    const {role}=await request.json()
-    if(!userId || !role) return Response.json({error:'Data is missing'},{status:400})
-    try {
-             const user=await sql `update users set role=${role} where id=${userId}`
-    return Response.json({
-        message:'user role updated'
-    },{status:201})
-    } catch (e) {
-        return Response.json({
-            error:"Failed to update user"
-        })
-    }
-   
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ userId: string }> }
+) {
+  const session = await auth();
+
+  if (session?.user?.role !== "admin") {
+    return Response.json({ error: "Unauthorized" }, { status: 403 });
+  }
+
+  const { userId } = await params;
+  const { role } = await request.json();
+
+  if (!userId || !role || !["admin", "user"].includes(role)) {
+    return Response.json({ error: "Invalid data provided" }, { status: 400 });
+  }
+
+  try {
+    await sql`UPDATE users SET role=${role} WHERE id=${userId}`;
+
+    return Response.json({ message: "User role updated" }, { status: 200 });
+  } catch (e) {
+    console.error(e);
+
+    return Response.json({ error: "Failed to update user" }, { status: 400 });
+  }
 }
-export async function PUT(request:Request,{params}:{params:Promise<{userId:string}>}){
-    
-    const {userId}=await params
-    const {isActive}=await request.json()
-    if(!userId ) return Response.json({error:'Data is missing'},{status:400})
-    try {
-    await sql `update users set is_active=${isActive} where id=${userId}`
-    return Response.json({
-        message:'user update succesfully'
-    },{status:200})
-    } catch (e) {
-        console.error(e);
-        
-        return Response.json({error:'failed to update the user'},{status:400})
-    }
 
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ userId: string }> }
+) {
+  const session = await auth();
+
+  if (session?.user?.role !== "admin") {
+    return Response.json({ error: "Unauthorized" }, { status: 403 });
+  }
+
+  const { userId } = await params;
+  const { isActive } = await request.json();
+
+  if (!userId || typeof isActive !== "boolean") {
+    return Response.json({ error: "Data is missing" }, { status: 400 });
+  }
+
+  try {
+    await sql`UPDATE users SET is_active=${isActive} WHERE id=${userId}`;
+
+    return Response.json(
+      { message: "User updated successfully" },
+      { status: 200 }
+    );
+  } catch (e) {
+    console.error(e);
+
+    return Response.json(
+      { error: "Failed to update the user" },
+      { status: 400 }
+    );
+  }
 }

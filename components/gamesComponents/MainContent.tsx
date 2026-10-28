@@ -1,97 +1,476 @@
-"use client"
+"use client";
+
+import { Button, Link, addToast } from "@heroui/react";
+import { useContext, useState } from "react";
+import {
+  ShoppingCart,
+  Check,
+  ShieldCheck,
+  Zap,
+  Globe,
+  ArrowLeft,
+  ArrowRight,
+  Cpu,
+  KeyRound,
+} from "lucide-react";
+
+import { CarouselGameDetail } from "./Carroulsel";
+import { CartContext } from "../../app/(main)/contex/contex";
 import { Games, sreenshoots, tags } from "@/types/database";
 import { ProductCart } from "@/components/globalComponents/Card";
 
-import { CarouselGameDetail } from "./Carroulsel";
-import { Card, CardBody, Chip, Button,Image } from "@heroui/react";
-import { useContext } from "react";
-import { CartContext } from "../../app/(main)/contex/contex";
-export default function MainContent({game,tags,screenshoots}:{game:Games,tags:tags[],screenshoots:sreenshoots[]}){
-    const cartContext=useContext(CartContext)
-      const { cartList, setCartList } = useContext(CartContext);
+const SYSTEM_REQUIREMENTS = {
+  minimum: [
+    { label: "OS", value: "Windows 10 64-bit (v1909 or higher)" },
+    { label: "Processor", value: "Intel Core i5-8400 / AMD Ryzen 5 2600" },
+    { label: "Memory", value: "12 GB RAM" },
+    { label: "Graphics", value: "NVIDIA GTX 1060 6GB / AMD RX 580 8GB" },
+    { label: "DirectX", value: "Version 12" },
+    { label: "Storage", value: "50 GB available SSD space" },
+  ],
+  recommended: [
+    { label: "OS", value: "Windows 11 64-bit" },
+    { label: "Processor", value: "Intel Core i7-10700K / AMD Ryzen 7 5800X" },
+    { label: "Memory", value: "16 GB RAM" },
+    { label: "Graphics", value: "NVIDIA RTX 3070 8GB / AMD RX 6800 XT" },
+    { label: "DirectX", value: "Version 12" },
+    { label: "Storage", value: "50 GB available NVMe SSD space" },
+  ],
+};
 
-    return (
-    <section className="w-full m-0 p-0 text-gray-100">
-      <div
-        className="relative min-h-screen flex items-end bg-cover bg-center transition-all duration-700"
-        style={{
-          backgroundImage: `url(${game.img_url})`,
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent backdrop-blur-[2px]" />
+const ACTIVATION_STEPS = [
+  {
+    step: "01",
+    title: "Complete Checkout",
+    detail:
+      "Your unique 15-character activation code is generated immediately after payment.",
+  },
+  {
+    step: "02",
+    title: "Open Your PC Client",
+    detail:
+      "Launch your PC digital launcher and click 'Activate a Product' in the Games menu.",
+  },
+  {
+    step: "03",
+    title: "Paste Key & Install",
+    detail:
+      "Enter your code from the Order Confirmation or Profile page to unlock the full game permanently.",
+  },
+];
 
-        <div className="relative z-10 w-full p-16 flex flex-col gap-6 max-w-5xl">
-          <h1 className="text-6xl md:text-7xl font-extrabold uppercase tracking-wide drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-            {game.title}
-          </h1>
+export default function MainContent({
+  game,
+  tags,
+  screenshoots,
+  relatedGames = [],
+}: {
+  game: Games;
+  tags: tags[];
+  screenshoots: sreenshoots[];
+  relatedGames?: Games[];
+}) {
+  const { cartList, setCartList } = useContext(CartContext);
+  const [loading, setLoading] = useState(false);
 
-          <p className="max-w-3xl text-lg md:text-xl leading-relaxed text-gray-200 drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]">
-            {game.description}
-          </p>
+  const safeCartList = Array.isArray(cartList) ? cartList : [];
+  const isInCart = safeCartList.some((g) => g.id === game.id);
 
-          <div className="flex flex-wrap gap-3 uppercase">
-            {tags.map((tag) => (
-              <Chip
-                key={tag.tag_id}
-                variant="bordered"
-                color="warning"
-                size="sm"
-                radius="sm"
-                className="hover:scale-110 transition-transform"
-              >
-                {tag.tag_name}
-              </Chip>
-            ))}
+  const allMedia: sreenshoots[] = [
+    { id: "cover", screenshot_url: game.img_url },
+    ...(screenshoots || []),
+  ];
+
+  const handleToggleCart = async () => {
+    setLoading(true);
+    try {
+      if (isInCart) {
+        const res = await fetch("/api/orders", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ gameId: game.id }),
+        });
+
+        if (res.ok) {
+          setCartList(safeCartList.filter((g) => g.id !== game.id));
+          addToast({
+            title: `${game.title} removed from cart`,
+            color: "default",
+            variant: "flat",
+          });
+        }
+      } else {
+        const res = await fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ game }),
+        });
+
+        if (res.status === 401) {
+          addToast({
+            title: "Please sign in to add games to your cart",
+            color: "warning",
+            variant: "flat",
+          });
+        } else if (res.ok) {
+          setCartList([...safeCartList, game]);
+          addToast({
+            title: `${game.title} added to cart`,
+            color: "success",
+            variant: "flat",
+          });
+        } else {
+          addToast({
+            title: "Could not add game to cart",
+            color: "danger",
+            variant: "flat",
+          });
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const releaseDateFormatted = game.release_at
+    ? new Date(game.release_at).toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
+    : "Available Now";
+
+  const stockCount = Number(game.stock ?? 15);
+
+  return (
+    <div className="min-h-screen bg-[var(--surface-1)] pb-24">
+      {/* Subtle top header bar */}
+      <div className="border-b border-[var(--border-color)] bg-[var(--surface-2)]">
+        <div className="page-container py-5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
+            <Link
+              className="text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] flex items-center gap-1.5 no-underline"
+              href="/games"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              Catalog
+            </Link>
+            <span>/</span>
+            <span className="text-[var(--text-primary)] font-medium truncate max-w-[260px]">
+              {game.title}
+            </span>
           </div>
 
-          <Button onPress={async()=>{
-            console.log(game);
-            
-        //         await fetch("/api/orders", {
-        //   method: "POST",
-        //   headers: { "Content-Type": "application/json" },
-        //   body: JSON.stringify({ game }),
-        // });
-        //     setCartList([...cartList,game])
-          }}
-            className="mt-6 w-48 py-6 text-lg font-semibold shadow-lg 
-                       bg-gradient-to-r from-yellow-500 to-orange-600 
-                       hover:from-yellow-400 hover:to-orange-500 
-                       hover:shadow-[0_0_20px_rgba(255,165,0,0.6)] 
-                       transition-all duration-300"
-            color="warning"
-            variant="shadow"
-          >
-            Add to cart
-          </Button>
+          {Number(game.metacritic) > 0 && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-[var(--text-secondary)]">
+                Metacritic Score
+              </span>
+              <span className="px-2 py-0.5 rounded-md border border-[var(--border-color)] bg-[var(--surface-3)] text-xs font-bold text-[var(--text-primary)]">
+                {Number(game.metacritic)}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="m-8 grid grid-cols-1 md:grid-cols-2 gap-8 place-items-center ">
-        <div className="w-full max-w-3xl">
-          <CarouselGameDetail images={screenshoots} />
-        </div>
+      {/* Main content container */}
+      <div className="page-container pt-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          {/* Left column: Media Gallery + Editorial Description + Specs + Redemption */}
+          <div className="lg:col-span-8 flex flex-col gap-12">
+            <CarouselGameDetail images={allMedia} />
 
-        <div className=" flex flex-wrap justify-center gap-6 ">
-          {screenshoots.map((screenshot) => (
-            <Card  key={screenshot.id}
-              className="w-56 h-36 overflow-hidden rounded-2xl shadow-lg hover:scale-105 hover:shadow-[0_0_25px_rgba(255,255,255,0.15)] transition-all duration-300"
-            >
-              <CardBody className="p-0">
-                <Image
-                  src={screenshot.screenshot_url}
-                  alt="Screenshot"
-                  className="object-cover w-full h-full"
-                  loading="lazy"
+            {/* Editorial Overview */}
+            <div className="border-t border-[var(--border-color)] pt-8">
+              <p className="text-xs uppercase tracking-widest text-[var(--text-secondary)] font-semibold mb-2">
+                About This Title
+              </p>
+              <h2 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight mb-4">
+                Overview
+              </h2>
+              <p className="text-base text-[var(--text-secondary)] leading-relaxed max-w-2xl whitespace-pre-line">
+                {game.description}
+              </p>
+
+              {/* Tags */}
+              {tags && tags.length > 0 && (
+                <div className="mt-8">
+                  <p className="text-xs uppercase tracking-widest text-[var(--text-secondary)] font-semibold mb-3">
+                    Features &amp; Tags
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {tags.map((tag) => (
+                      <span
+                        key={tag.tag_id}
+                        className="px-3 py-1 rounded-lg border border-[var(--border-color)] bg-[var(--surface-2)] text-xs font-medium text-[var(--text-secondary)]"
+                      >
+                        {tag.tag_name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Product Specifications */}
+            <div className="border-t border-[var(--border-color)] pt-8">
+              <p className="text-xs uppercase tracking-widest text-[var(--text-secondary)] font-semibold mb-4">
+                Release Details
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="p-4 rounded-xl border border-[var(--border-color)] bg-[var(--surface-2)]">
+                  <span className="text-[11px] uppercase tracking-wider text-[var(--text-secondary)] block">
+                    Platform
+                  </span>
+                  <span className="text-sm font-semibold text-[var(--text-primary)] mt-1 block">
+                    PC Digital
+                  </span>
+                </div>
+                <div className="p-4 rounded-xl border border-[var(--border-color)] bg-[var(--surface-2)]">
+                  <span className="text-[11px] uppercase tracking-wider text-[var(--text-secondary)] block">
+                    Release Date
+                  </span>
+                  <span className="text-sm font-semibold text-[var(--text-primary)] mt-1 block">
+                    {releaseDateFormatted}
+                  </span>
+                </div>
+                <div className="p-4 rounded-xl border border-[var(--border-color)] bg-[var(--surface-2)]">
+                  <span className="text-[11px] uppercase tracking-wider text-[var(--text-secondary)] block">
+                    Region
+                  </span>
+                  <span className="text-sm font-semibold text-[var(--text-primary)] mt-1 block">
+                    Global / Worldwide
+                  </span>
+                </div>
+                <div className="p-4 rounded-xl border border-[var(--border-color)] bg-[var(--surface-2)]">
+                  <span className="text-[11px] uppercase tracking-wider text-[var(--text-secondary)] block">
+                    Delivery
+                  </span>
+                  <span className="text-sm font-semibold text-[var(--text-primary)] mt-1 block">
+                    Instant Key
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* System Requirements (Minimum vs Recommended) */}
+            <div className="border-t border-[var(--border-color)] pt-8">
+              <div className="flex items-center gap-2 mb-2">
+                <Cpu className="w-4 h-4 text-[var(--text-secondary)]" />
+                <p className="text-xs uppercase tracking-widest text-[var(--text-secondary)] font-semibold">
+                  Hardware Compatibility
+                </p>
+              </div>
+              <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight mb-5">
+                PC System Requirements
+              </h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Minimum */}
+                <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--surface-2)] p-6">
+                  <span className="text-xs uppercase tracking-widest text-[var(--text-secondary)] font-semibold block mb-4 pb-3 border-b border-[var(--border-color)]">
+                    Minimum Configuration
+                  </span>
+                  <dl className="flex flex-col gap-3">
+                    {SYSTEM_REQUIREMENTS.minimum.map((spec) => (
+                      <div key={spec.label} className="flex flex-col gap-0.5">
+                        <dt className="text-[11px] uppercase tracking-wider text-[var(--text-secondary)]">
+                          {spec.label}
+                        </dt>
+                        <dd className="text-xs font-medium text-[var(--text-primary)] m-0">
+                          {spec.value}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+
+                {/* Recommended */}
+                <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--surface-2)] p-6">
+                  <span className="text-xs uppercase tracking-widest text-[var(--text-primary)] font-semibold block mb-4 pb-3 border-b border-[var(--border-color)]">
+                    Recommended Configuration
+                  </span>
+                  <dl className="flex flex-col gap-3">
+                    {SYSTEM_REQUIREMENTS.recommended.map((spec) => (
+                      <div key={spec.label} className="flex flex-col gap-0.5">
+                        <dt className="text-[11px] uppercase tracking-wider text-[var(--text-secondary)]">
+                          {spec.label}
+                        </dt>
+                        <dd className="text-xs font-medium text-[var(--text-primary)] m-0">
+                          {spec.value}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              </div>
+            </div>
+
+            {/* Key Activation Guide */}
+            <div className="border-t border-[var(--border-color)] pt-8">
+              <div className="flex items-center gap-2 mb-2">
+                <KeyRound className="w-4 h-4 text-[var(--text-secondary)]" />
+                <p className="text-xs uppercase tracking-widest text-[var(--text-secondary)] font-semibold">
+                  Redemption Guide
+                </p>
+              </div>
+              <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight mb-5">
+                How to Activate Your Digital Key
+              </h2>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {ACTIVATION_STEPS.map((item) => (
+                  <div
+                    key={item.step}
+                    className="rounded-xl border border-[var(--border-color)] bg-[var(--surface-2)] p-5 flex flex-col gap-2"
+                  >
+                    <span className="text-xs font-mono font-bold text-[var(--text-secondary)]">
+                      {item.step}
+                    </span>
+                    <h3 className="text-sm font-bold text-[var(--text-primary)]">
+                      {item.title}
+                    </h3>
+                    <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                      {item.detail}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right column: Sticky Purchase Card */}
+          <aside className="lg:col-span-4 lg:sticky lg:top-24">
+            <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--surface-2)] p-6 flex flex-col gap-6">
+              {/* Cover + Title */}
+              <div className="flex items-start gap-4">
+                <img
+                  alt={game.title}
+                  className="w-20 h-24 rounded-xl object-cover border border-[var(--border-color)] flex-shrink-0 bg-neutral-900"
+                  src={game.img_url}
                 />
-              </CardBody>
-            </Card>
-          ))}
+                <div className="min-w-0">
+                  <span className="text-[11px] uppercase tracking-widest text-[var(--text-secondary)] font-semibold block">
+                    Standard Digital Edition
+                  </span>
+                  <h1 className="text-xl font-extrabold text-[var(--text-primary)] tracking-tight leading-snug mt-1">
+                    {game.title}
+                  </h1>
+                  <div className="flex items-center gap-1.5 mt-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                    <span className="text-xs font-medium text-[var(--text-secondary)]">
+                      {stockCount > 0
+                        ? `In stock (${stockCount} keys ready)`
+                        : "In stock — Digital key"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Edition contents */}
+              <div className="rounded-xl border border-[var(--border-color)] bg-[var(--surface-1)] p-3.5 flex flex-col gap-2">
+                <span className="text-[11px] uppercase tracking-wider text-[var(--text-secondary)] font-semibold">
+                  Included in this edition
+                </span>
+                <div className="flex items-center gap-2 text-xs text-[var(--text-primary)] font-medium">
+                  <Check className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                  <span>Full Base Game ({game.title})</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-[var(--text-primary)] font-medium">
+                  <Check className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                  <span>Official 15-Character Activation Code</span>
+                </div>
+              </div>
+
+              {/* Price block */}
+              <div className="border-y border-[var(--border-color)] py-4 flex items-baseline justify-between">
+                <span className="text-xs uppercase tracking-widest text-[var(--text-secondary)] font-semibold">
+                  Total Price
+                </span>
+                <span className="text-3xl font-extrabold text-[var(--text-primary)] tracking-tight">
+                  ${Number(game.price).toFixed(2)}
+                </span>
+              </div>
+
+              {/* Primary CTA */}
+              <Button
+                fullWidth
+                className={`h-12 rounded-xl font-semibold text-sm transition-all ${
+                  isInCart
+                    ? ""
+                    : "bg-[var(--text-primary)] text-[var(--surface-1)] hover:opacity-90"
+                }`}
+                color={isInCart ? "danger" : "default"}
+                isLoading={loading}
+                startContent={
+                  isInCart ? (
+                    <Check className="w-4 h-4" />
+                  ) : (
+                    <ShoppingCart className="w-4 h-4" />
+                  )
+                }
+                variant={isInCart ? "flat" : "solid"}
+                onPress={handleToggleCart}
+              >
+                {isInCart ? "Remove from Cart" : "Add to Cart"}
+              </Button>
+
+              {/* Trust guarantees */}
+              <div className="flex flex-col gap-3 pt-1">
+                <div className="flex items-center gap-2.5 text-xs text-[var(--text-secondary)]">
+                  <Zap className="w-4 h-4 text-[var(--text-primary)] flex-shrink-0" />
+                  <span>Instant key delivery in your account</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-xs text-[var(--text-secondary)]">
+                  <ShieldCheck className="w-4 h-4 text-[var(--text-primary)] flex-shrink-0" />
+                  <span>Verified official publisher license</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-xs text-[var(--text-secondary)]">
+                  <Globe className="w-4 h-4 text-[var(--text-primary)] flex-shrink-0" />
+                  <span>Global region activation</span>
+                </div>
+              </div>
+            </div>
+          </aside>
         </div>
+
+        {/* Related / Recommended Titles */}
+        {relatedGames && relatedGames.length > 0 && (
+          <section className="mt-20 pt-14 border-t border-[var(--border-color)]">
+            <div className="section-heading">
+              <div>
+                <p className="text-xs uppercase tracking-widest text-[var(--text-secondary)] font-semibold mb-1">
+                  Recommendations
+                </p>
+                <h2 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">
+                  You May Also Like
+                </h2>
+              </div>
+              <Button
+                as={Link}
+                className="text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] group"
+                endContent={
+                  <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                }
+                href="/games"
+                size="sm"
+                variant="light"
+              >
+                View full catalog
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {relatedGames.map((relGame) => (
+                <ProductCart key={relGame.id} game={relGame} setGames={null} />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
-
-      <div className="w-full h-2 bg-gradient-to-r from-yellow-500 to-orange-600" />
-    </section>
+    </div>
   );
-
 }

@@ -1,26 +1,68 @@
-import { Games } from "@/types/database";
 import { Button } from "@heroui/react";
-import { SetStateAction } from "react";
 
-export function Pagination({listGames,previousPage,nextPage,index,setPage}:{listGames:Games[],previousPage:()=>void,nextPage:()=>void,index:number,setPage:(number:number)=>void}){
-    const quantity=[]
-    for (let index = 0; index <= listGames.length/9; index++) {
-        quantity.push(index)
-        
-    }
-    return <>
-               <Button variant="ghost" isDisabled={index==0} onPress={previousPage} className="mr-1"  color="primary" isIconOnly>{'<'}</Button>
+import { Games } from "@/types/database";
 
-            {
-                quantity.map((number:number)=>(
-               <Button onPress={()=>{
-                setPage(number)
-               }} className={`mr-1 ${index==number?'border-2':''}` }  key={number} color="primary" isIconOnly>{number}</Button>
+export function Pagination({
+  listGames,
+  previousPage,
+  nextPage,
+  index,
+  setPage,
+}: {
+  listGames: Games[];
+  previousPage: () => void;
+  nextPage: () => void;
+  index: number;
+  setPage: (number: number) => void;
+}) {
+  const totalPages = Math.ceil(listGames.length / 9);
 
-                ))
-                
-            }
-               <Button variant="ghost"  isDisabled={index>=Math.floor(listGames.length/9)} onPress={nextPage} className="mr-1"  color="primary" isIconOnly>{'>'}</Button>
+  if (totalPages <= 1) return null;
 
-        </>
+  const quantity = Array.from({ length: totalPages }, (_, i) => i);
+
+  return (
+    <div className="flex items-center gap-1.5">
+      <Button
+        isIconOnly
+        className="rounded-xl border border-[var(--border-color)] bg-[var(--surface-2)] text-[var(--text-primary)]"
+        isDisabled={index === 0}
+        size="sm"
+        variant="flat"
+        onPress={previousPage}
+      >
+        {"<"}
+      </Button>
+
+      {quantity.map((number: number) => (
+        <Button
+          key={number}
+          isIconOnly
+          className={`rounded-xl text-xs font-semibold ${
+            index === number
+              ? "bg-[var(--text-primary)] text-[var(--surface-1)]"
+              : "border border-[var(--border-color)] bg-[var(--surface-2)] text-[var(--text-secondary)]"
+          }`}
+          size="sm"
+          variant="flat"
+          onPress={() => {
+            setPage(number);
+          }}
+        >
+          {number + 1}
+        </Button>
+      ))}
+
+      <Button
+        isIconOnly
+        className="rounded-xl border border-[var(--border-color)] bg-[var(--surface-2)] text-[var(--text-primary)]"
+        isDisabled={index >= totalPages - 1}
+        size="sm"
+        variant="flat"
+        onPress={nextPage}
+      >
+        {">"}
+      </Button>
+    </div>
+  );
 }

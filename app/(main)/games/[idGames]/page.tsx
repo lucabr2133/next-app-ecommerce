@@ -1,32 +1,58 @@
-import { gameDetailResponse, Genres } from "@/types/database"
-import MainContent from "@/components/gamesComponents/MainContent"
-import { cookies, headers } from "next/headers";
+import { notFound } from "next/navigation";
 
+import { Games, sreenshoots, tags } from "@/types/database";
+import MainContent from "@/components/gamesComponents/MainContent";
+import { sql } from "@/supabase";
 
-export default async  function Page({ params }: { params: Promise<{ idGames: string }> }) {
-    const {idGames}= await params
-    const url=process.env.NEXT_PUBLIC_API_URL
+export default async function GameDetailPage({
+  params,
+}: {
+  params: Promise<{ idGames: string }>;
+}) {
+  const { idGames } = await params;
 
-       const cookieStore =await cookies();
-    const game= await fetch(`${url}/api/games/${idGames}`,{
-        headers: { Cookie: cookieStore.toString() }, // 
-    })
-    if (!game.ok) {
-    const err = await game.json();
-    }
-      
-  
-    const data:gameDetailResponse=await game.json() 
-  
-    
-    const gameData=data.game[0]
-    const tags= data.tags
-    const screenshoots=data.screenshots
-return <>
-    <main className="p-0 m-0  " >
-      <MainContent   screenshoots={screenshoots} tags={tags} game={gameData}>
-      
-      </MainContent>
-    </main>
-  </>
+  const gameRows = await sql<Games[]>`
+    SELECT *
+    FROM games
+    WHERE games.id = ${idGames}
+  `;
+
+  if (!gameRows || gameRows.length === 0) {
+    notFound();
+  }
+
+  const gameData = gameRows[0];
+
+  const [gameTags, screenshots, relatedGames] = await Promise.all([
+    sql<tags[]>`
+      SELECT new_tags_game.tag_id AS tag_id, new_tags.name AS tag_name
+      FROM new_tags_game
+      INNER JOIN new_tags ON tag_id = new_tags.id
+      WHERE new_tags_game.game_id = ${gameData.id}
+    `,
+    sql<sreenshoots[]>`
+      SELECT DISTINCT screenshoots.id, screenshoots.screenshoot_url AS screenshot_url
+      FROM screenshoots
+      INNER JOIN screenshoots_game ON screenshoots_game.screenshoot_id = screenshoots.id
+      WHERE screenshoots_game.game_id = ${gameData.id}
+    `,
+    sql<Games[]>`
+      SELECT *
+      FROM games
+      WHERE id != ${gameData.id}
+      ORDER BY metacritic DESC NULLS LAST, release_at DESC
+      LIMIT 3
+    `,
+  ]);
+
+  return (
+    <div className="p-0 m-0">
+      <MainContent
+        game={gameData}
+        relatedGames={relatedGames}
+        screenshoots={screenshots}
+        tags={gameTags}
+      />
+    </div>
+  );
 }

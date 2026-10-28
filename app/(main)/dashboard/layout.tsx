@@ -1,19 +1,26 @@
 import React from "react";
-import Drawer from "@/components/dashboardComponents/drawer";
+import { redirect } from "next/navigation";
 
-export default function dashboardLayout({ children }: { children: React.ReactNode }) {
+import Drawer from "@/components/dashboardComponents/drawer";
+import { auth } from "@/auth";
+
+export default async function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await auth();
+
+  if (session?.user?.role !== "admin") {
+    redirect("/");
+  }
+
   return (
-    <>
+    <div className="min-h-screen bg-[var(--surface-1)] flex flex-col lg:flex-row">
       <Drawer />
-      {/* Offset content by sidebar width */}
-      <div
-        className="min-h-screen bg-[var(--surface-1)]"
-        style={{ paddingLeft: "var(--sidebar-width, 240px)" }}
-      >
-        <div className="p-6 max-w-[1200px] mx-auto w-full">
-          {children}
-        </div>
+      <div className="flex-1 min-w-0 p-6 lg:p-10 max-w-7xl mx-auto w-full">
+        {children}
       </div>
-    </>
+    </div>
   );
 }

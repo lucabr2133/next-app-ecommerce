@@ -1,8 +1,9 @@
 "use server";
 
-import { sql } from "@/supabase";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+
+import { sql } from "@/supabase";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email" }),
@@ -29,17 +30,20 @@ export async function signIn(prevState: any, formData: FormData) {
 
   try {
     const hash = await bcrypt.hash(parsed.data.password, 10);
+
     await sql`
-      INSERT INTO users (email, username, password,role)
-      VALUES (${parsed.data.email}, ${parsed.data.username}, ${hash},'user')
+      INSERT INTO users (email, username, password, role)
+      VALUES (${parsed.data.email}, ${parsed.data.username}, ${hash}, 'user')
     `;
+
     return {
       success: true,
       errors: {},
-      message: "✅ User created successfully!",
+      message: "Account created successfully. You can now sign in.",
     };
   } catch (err) {
     console.error(err);
+
     return {
       success: false,
       errors: {},

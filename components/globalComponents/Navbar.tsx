@@ -16,34 +16,39 @@ import {
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { ShoppingCartIcon } from "lucide-react";
 import { useDebouncedCallback } from "use-debounce";
-import { DrawerComponent } from "./Drawer";
-import { LogOut } from "@/lib/logOut";
 import { Session } from "next-auth";
-import { useEffect, useState } from "react";
-import { ThemeSwitcher } from "./ThemeSwitcher";
+import { Suspense, useContext, useState } from "react";
 
-export function NavbarComponet({ session }: { session: Session | null }) {
+import { DrawerComponent } from "./Drawer";
+import { ThemeSwitcher } from "./ThemeSwitcher";
+import { LogOut } from "@/lib/logOut";
+import { CartContext } from "@/app/(main)/contex/contex";
+
+function NavbarInner({ session }: { session: Session | null }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const searchParams = useSearchParams();
-  const params = new URLSearchParams(searchParams);
   const router = useRouter();
   const pathname = usePathname();
-  const url = process.env.NEXT_PUBLIC_API_URL;
+  const { cartList } = useContext(CartContext);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   function onHandleSearch(search: string) {
+    const params = new URLSearchParams(searchParams.toString());
+
     if (search) {
       params.set("search", search);
     } else {
       params.delete("search");
     }
-    router.replace(`${url}/games?${params.toString()}`);
+    router.replace(`/games?${params.toString()}`);
   }
 
   const isActive = (href: string) => pathname === href;
+  const isAdmin = session?.user?.role === "admin";
+  const isLogged = !!session?.user;
+  const cartCount = Array.isArray(cartList) ? cartList.length : 0;
 
-  // Get user initials for avatar
   const userInitial = session?.user?.name
     ? session.user.name.charAt(0).toUpperCase()
     : "?";
@@ -51,9 +56,9 @@ export function NavbarComponet({ session }: { session: Session | null }) {
   return (
     <>
       <Navbar
-        className="border-b border-[var(--border-color)] bg-[var(--surface-1)]/80 backdrop-blur-xl"
+        className="border-b border-[var(--border-color)] bg-[var(--surface-1)]/90 backdrop-blur-md"
+        maxWidth="xl"
         onMenuOpenChange={setIsMenuOpen}
-        maxWidth="full"
       >
         {/* ---- Mobile: hamburger ---- */}
         <NavbarContent className="sm:hidden" justify="start">
@@ -62,58 +67,84 @@ export function NavbarComponet({ session }: { session: Session | null }) {
           />
         </NavbarContent>
 
-        {/* ---- Brand (always visible) ---- */}
+        {/* ---- Brand (always visible on mobile) ---- */}
         <NavbarContent className="sm:hidden" justify="center">
           <NavbarItem>
-            <Link href={url} className="flex items-center gap-2 no-underline">
-              <span className="text-lg font-extrabold tracking-tight gradient-text">
-                GameStore
+            <Link className="flex items-center gap-2 no-underline" href="/">
+              <span className="text-base font-bold tracking-tight text-[var(--text-primary)]">
+                GAMESTORE
               </span>
             </Link>
           </NavbarItem>
         </NavbarContent>
 
         {/* ---- Desktop left: brand ---- */}
-        <NavbarContent className="hidden sm:flex gap-6" justify="start">
+        <NavbarContent className="hidden sm:flex gap-8" justify="start">
           <NavbarItem>
-            <Link href={url} className="flex items-center gap-2 no-underline">
-              <svg
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-amber-500"
-              >
-                <path d="M21 6H3a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z" />
-                <line x1="9" y1="12" x2="15" y2="12" />
-                <line x1="12" y1="9" x2="12" y2="15" />
-              </svg>
-              <span className="text-lg font-extrabold tracking-tight gradient-text">
+            <Link className="flex items-center gap-2.5 no-underline" href="/">
+              <div className="w-7 h-7 rounded-lg bg-[var(--text-primary)] text-[var(--surface-1)] flex items-center justify-center font-black text-xs tracking-tighter">
+                GS
+              </div>
+              <span className="text-base font-bold tracking-tight text-[var(--text-primary)]">
                 GameStore
               </span>
             </Link>
           </NavbarItem>
+
+          <NavbarItem>
+            <Link
+              className={`text-sm font-medium transition-colors no-underline ${
+                isActive("/")
+                  ? "text-[var(--text-primary)]"
+                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+              }`}
+              href="/"
+            >
+              Store
+            </Link>
+          </NavbarItem>
+
+          <NavbarItem>
+            <Link
+              className={`text-sm font-medium transition-colors no-underline ${
+                isActive("/games")
+                  ? "text-[var(--text-primary)]"
+                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+              }`}
+              href="/games"
+            >
+              Catalog
+            </Link>
+          </NavbarItem>
+
+          {isAdmin && (
+            <NavbarItem>
+              <Link
+                className={`text-sm font-medium transition-colors no-underline ${
+                  pathname.startsWith("/dashboard")
+                    ? "text-[var(--text-primary)]"
+                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                }`}
+                href="/dashboard"
+              >
+                Admin
+              </Link>
+            </NavbarItem>
+          )}
         </NavbarContent>
 
         {/* ---- Desktop center: search ---- */}
-        <NavbarContent className="hidden sm:flex flex-1" justify="center">
-          <NavbarItem className="w-full max-w-lg">
+        <NavbarContent className="hidden sm:flex flex-1 max-w-md" justify="center">
+          <NavbarItem className="w-full">
             <Input
-              defaultValue={searchParams.get("search")?.toString()}
-              onChange={useDebouncedCallback((e) => {
-                onHandleSearch(e.target.value);
-              }, 500)}
-              placeholder="Search games..."
-              radius="full"
-              variant="bordered"
-              size="sm"
               classNames={{
-                inputWrapper: "border-[var(--border-color)] hover:border-amber-500/60 transition-colors bg-[var(--surface-2)]",
+                inputWrapper:
+                  "border-[var(--border-color)] hover:border-neutral-500 transition-colors bg-[var(--surface-2)] h-9",
               }}
+              defaultValue={searchParams.get("search")?.toString()}
+              placeholder="Search titles, genres..."
+              radius="lg"
+              size="sm"
               startContent={
                 <svg
                   className="w-4 h-4 text-[var(--text-secondary)] mr-1"
@@ -122,92 +153,127 @@ export function NavbarComponet({ session }: { session: Session | null }) {
                   viewBox="0 0 24 24"
                 >
                   <path
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    strokeWidth={1.75}
                   />
                 </svg>
               }
+              variant="bordered"
+              onChange={useDebouncedCallback((e) => {
+                onHandleSearch(e.target.value);
+              }, 400)}
             />
           </NavbarItem>
         </NavbarContent>
 
-        {/* ---- Desktop right: nav links + actions ---- */}
-        <NavbarContent className="hidden sm:flex gap-2" justify="end">
+        {/* ---- Desktop right: actions ---- */}
+        <NavbarContent className="hidden sm:flex gap-2.5" justify="end">
+          {/* Theme switcher */}
           <NavbarItem>
-            <Link
-              href="/games"
-              className={`text-sm font-medium px-3 py-1.5 rounded-lg transition-colors no-underline
-                ${isActive("/games")
-                  ? "text-amber-500 bg-amber-500/10"
-                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-3)]"
-                }`}
-            >
-              Browse
-            </Link>
-          </NavbarItem>
-
-          <NavbarItem>
-            <Link
-              href="/dashboard"
-              className={`text-sm font-medium px-3 py-1.5 rounded-lg transition-colors no-underline
-                ${isActive("/dashboard")
-                  ? "text-amber-500 bg-amber-500/10"
-                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-3)]"
-                }`}
-            >
-              Dashboard
-            </Link>
+            <ThemeSwitcher />
           </NavbarItem>
 
           {/* Cart button */}
           <NavbarItem>
-            <Button
-              isIconOnly
-              variant="flat"
-              onPress={onOpen}
-              className="rounded-xl relative hover:bg-amber-500/10 hover:text-amber-500 transition-colors"
-              size="sm"
-              aria-label="Shopping cart"
-            >
-              <ShoppingCartIcon className="w-4 h-4" />
-            </Button>
-          </NavbarItem>
-
-          {/* User avatar */}
-          <NavbarItem>
-            <Button
-              as={Link}
-              href={`/profile/${session?.user?.name}`}
-              isIconOnly
-              variant="flat"
-              size="sm"
-              className="rounded-xl font-bold text-sm bg-gradient-to-br from-amber-500 to-orange-600 text-white border-0 hover:opacity-90 transition-opacity"
-              aria-label="Profile"
-            >
-              {userInitial}
-            </Button>
-          </NavbarItem>
-
-          {/* Logout */}
-          <NavbarItem>
-            <Form action={LogOut}>
+            <div className="relative">
               <Button
-                type="submit"
-                variant="flat"
-                color="danger"
+                isIconOnly
+                aria-label="Shopping cart"
+                className="rounded-xl border border-[var(--border-color)] bg-[var(--surface-2)] text-[var(--text-primary)] hover:bg-[var(--surface-3)] transition-colors"
                 size="sm"
-                className="rounded-xl text-sm"
+                variant="flat"
+                onPress={onOpen}
               >
-                Log out
+                <ShoppingCartIcon className="w-4 h-4" />
               </Button>
-            </Form>
+              {cartCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 min-w-4 h-4 px-1 rounded-full bg-[var(--text-primary)] text-[var(--surface-1)] text-[10px] font-bold flex items-center justify-center pointer-events-none">
+                  {cartCount}
+                </span>
+              )}
+            </div>
           </NavbarItem>
 
-          {/* Theme switcher */}
+          {isLogged ? (
+            <>
+              {/* User avatar */}
+              <NavbarItem>
+                <Button
+                  isIconOnly
+                  aria-label="Profile"
+                  as={Link}
+                  className="rounded-xl font-semibold text-xs bg-[var(--surface-3)] text-[var(--text-primary)] border border-[var(--border-color)] hover:opacity-90 transition-opacity"
+                  href={`/profile/${session?.user?.name}`}
+                  size="sm"
+                  variant="flat"
+                >
+                  {userInitial}
+                </Button>
+              </NavbarItem>
+
+              {/* Logout */}
+              <NavbarItem>
+                <Form action={LogOut}>
+                  <Button
+                    className="rounded-xl text-xs font-medium text-[var(--text-secondary)] hover:text-danger"
+                    size="sm"
+                    type="submit"
+                    variant="light"
+                  >
+                    Sign out
+                  </Button>
+                </Form>
+              </NavbarItem>
+            </>
+          ) : (
+            <>
+              <NavbarItem>
+                <Button
+                  as={Link}
+                  className="rounded-xl text-xs font-medium text-[var(--text-primary)]"
+                  href="/login"
+                  size="sm"
+                  variant="light"
+                >
+                  Sign in
+                </Button>
+              </NavbarItem>
+              <NavbarItem>
+                <Button
+                  as={Link}
+                  className="rounded-xl text-xs font-semibold bg-[var(--text-primary)] text-[var(--surface-1)]"
+                  href="/sign"
+                  size="sm"
+                >
+                  Create account
+                </Button>
+              </NavbarItem>
+            </>
+          )}
+        </NavbarContent>
+
+        {/* ---- Mobile right: cart button ---- */}
+        <NavbarContent className="sm:hidden" justify="end">
           <NavbarItem>
-            <ThemeSwitcher />
+            <div className="relative">
+              <Button
+                isIconOnly
+                aria-label="Shopping cart"
+                className="rounded-xl relative"
+                size="sm"
+                variant="flat"
+                onPress={onOpen}
+              >
+                <ShoppingCartIcon className="w-4 h-4" />
+              </Button>
+              {cartCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 min-w-4 h-4 px-1 rounded-full bg-amber-500 text-black text-[10px] font-extrabold flex items-center justify-center pointer-events-none">
+                  {cartCount}
+                </span>
+              )}
+            </div>
           </NavbarItem>
         </NavbarContent>
 
@@ -215,23 +281,23 @@ export function NavbarComponet({ session }: { session: Session | null }) {
         <NavbarMenu className="pt-6 gap-4 bg-[var(--surface-1)]/95 backdrop-blur-xl">
           <NavbarMenuItem>
             <Input
-              defaultValue={searchParams.get("search")?.toString()}
-              onChange={useDebouncedCallback((e) => {
-                onHandleSearch(e.target.value);
-              }, 500)}
-              placeholder="Search games..."
-              radius="full"
-              variant="bordered"
               classNames={{
                 inputWrapper: "border-[var(--border-color)]",
               }}
+              defaultValue={searchParams.get("search")?.toString()}
+              placeholder="Search games..."
+              radius="full"
+              variant="bordered"
+              onChange={useDebouncedCallback((e) => {
+                onHandleSearch(e.target.value);
+              }, 500)}
             />
           </NavbarMenuItem>
 
           <NavbarMenuItem>
             <Link
-              href={url}
               className="text-base font-semibold text-[var(--text-primary)] no-underline"
+              href="/"
             >
               Home
             </Link>
@@ -239,38 +305,59 @@ export function NavbarComponet({ session }: { session: Session | null }) {
 
           <NavbarMenuItem>
             <Link
-              href="/games"
               className="text-base font-semibold text-[var(--text-primary)] no-underline"
+              href="/games"
             >
               Browse Games
             </Link>
           </NavbarMenuItem>
 
-          <NavbarMenuItem>
-            <Link
-              href="/dashboard"
-              className="text-base font-semibold text-[var(--text-primary)] no-underline"
-            >
-              Dashboard
-            </Link>
-          </NavbarMenuItem>
+          {isAdmin && (
+            <NavbarMenuItem>
+              <Link
+                className="text-base font-semibold text-[var(--text-primary)] no-underline"
+                href="/dashboard"
+              >
+                Dashboard
+              </Link>
+            </NavbarMenuItem>
+          )}
 
-          <NavbarMenuItem>
-            <Link
-              href={`/profile/${session?.user?.name}`}
-              className="text-base font-semibold text-[var(--text-primary)] no-underline"
-            >
-              My Profile
-            </Link>
-          </NavbarMenuItem>
+          {isLogged ? (
+            <>
+              <NavbarMenuItem>
+                <Link
+                  className="text-base font-semibold text-[var(--text-primary)] no-underline"
+                  href={`/profile/${session?.user?.name}`}
+                >
+                  My Profile
+                </Link>
+              </NavbarMenuItem>
 
-          <NavbarMenuItem>
-            <Form action={LogOut}>
-              <Button type="submit" variant="flat" color="danger" fullWidth>
-                Log out
+              <NavbarMenuItem>
+                <Form action={LogOut}>
+                  <Button fullWidth color="danger" type="submit" variant="flat">
+                    Log out
+                  </Button>
+                </Form>
+              </NavbarMenuItem>
+            </>
+          ) : (
+            <NavbarMenuItem className="flex gap-2">
+              <Button fullWidth as={Link} href="/login" variant="flat">
+                Log in
               </Button>
-            </Form>
-          </NavbarMenuItem>
+              <Button
+                fullWidth
+                as={Link}
+                className="font-bold text-black"
+                color="warning"
+                href="/sign"
+              >
+                Sign up
+              </Button>
+            </NavbarMenuItem>
+          )}
 
           <NavbarMenuItem>
             <ThemeSwitcher />
@@ -280,5 +367,13 @@ export function NavbarComponet({ session }: { session: Session | null }) {
 
       <DrawerComponent isOpen={isOpen} onOpenChange={onOpenChange} />
     </>
+  );
+}
+
+export function NavbarComponet({ session }: { session: Session | null }) {
+  return (
+    <Suspense fallback={<div className="h-16 border-b border-[var(--border-color)] bg-[var(--surface-1)]" />}>
+      <NavbarInner session={session} />
+    </Suspense>
   );
 }

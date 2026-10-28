@@ -3,15 +3,15 @@
 @config "../tailwind.config.js";
 
 /* ============================================
-   GAME STORE — Global Design System
+   GAME STORE — Editorial Design System
    ============================================ */
 
 @layer base {
   :root {
-    /* Brand */
-    --brand-primary: #f59e0b;       /* amber-500 */
-    --brand-primary-glow: rgba(245, 158, 11, 0.35);
-    --brand-secondary: #8b5cf6;     /* violet-500 */
+    /* High-contrast monochrome + subtle warm accent */
+    --brand-primary: #171717;
+    --brand-primary-glow: rgba(0, 0, 0, 0.08);
+    --brand-secondary: #52525b;
     --brand-danger: #ef4444;
 
     /* Spacing scale */
@@ -25,48 +25,52 @@
 
     /* Border radius */
     --radius-sm: 0.5rem;
-    --radius-md: 0.875rem;
-    --radius-lg: 1.25rem;
-    --radius-xl: 1.75rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.25rem;
     --radius-full: 9999px;
 
     /* Shadows */
-    --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.12);
-    --shadow-card-hover: 0 8px 40px rgba(0, 0, 0, 0.22);
-    --shadow-glow-amber: 0 0 28px rgba(245, 158, 11, 0.28);
-    --shadow-glow-violet: 0 0 28px rgba(139, 92, 246, 0.22);
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.04);
+    --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.1), 0 16px 32px rgba(0, 0, 0, 0.08);
 
     /* Transitions */
     --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-base: 280ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 220ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
 
     /* Page max-width */
-    --page-max: 1400px;
+    --page-max: 1280px;
 
     /* Sidebar width */
     --sidebar-width: 240px;
 
     /* Light mode surfaces */
-    --surface-1: #ffffff;
-    --surface-2: #f8f8f8;
-    --surface-3: #f0f0f0;
-    --surface-glass: rgba(255, 255, 255, 0.65);
-    --border-color: rgba(0, 0, 0, 0.09);
-    --text-primary: #0f0f10;
-    --text-secondary: #6e6e72;
+    --surface-1: #fafafa;
+    --surface-2: #ffffff;
+    --surface-3: #f4f4f5;
+    --surface-glass: rgba(255, 255, 255, 0.85);
+    --border-color: rgba(0, 0, 0, 0.08);
+    --text-primary: #0a0a0a;
+    --text-secondary: #52525b;
+    --accent-solid: #0a0a0a;
+    --accent-solid-fg: #fafafa;
   }
 
   /* Dark mode overrides */
   .dark,
   [data-theme="dark"] {
-    --surface-1: #111113;
-    --surface-2: #1a1a1d;
-    --surface-3: #222225;
-    --surface-glass: rgba(20, 20, 24, 0.72);
-    --border-color: rgba(255, 255, 255, 0.09);
-    --text-primary: #f4f4f5;
-    --text-secondary: #9b9ba0;
+    --brand-primary: #fafafa;
+    --brand-primary-glow: rgba(255, 255, 255, 0.08);
+    --surface-1: #0a0a0a;
+    --surface-2: #121214;
+    --surface-3: #1c1c1f;
+    --surface-glass: rgba(18, 18, 20, 0.82);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --text-primary: #fafafa;
+    --text-secondary: #a1a1aa;
+    --accent-solid: #fafafa;
+    --accent-solid-fg: #0a0a0a;
   }
 
   html {
@@ -77,7 +81,9 @@
   }
 
   body {
-    @apply transition-colors duration-300;
+    @apply transition-colors duration-200;
+    background-color: var(--surface-1);
+    color: var(--text-primary);
   }
 
   * {
@@ -90,74 +96,39 @@
    ============================================ */
 
 @layer utilities {
-  /* Page container */
   .page-container {
     width: 100%;
     max-width: var(--page-max);
     margin-inline: auto;
-    padding-inline: var(--space-lg);
+    padding-inline: 1.5rem;
   }
 
-  /* Section heading with amber accent bar */
   .section-heading {
     display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    margin-bottom: var(--space-xl);
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
   }
 
-  .section-heading::before {
-    content: "";
-    display: block;
-    width: 4px;
-    height: 2rem;
-    border-radius: var(--radius-full);
-    background: linear-gradient(to bottom, #f59e0b, #d97706);
-    flex-shrink: 0;
-  }
-
-  /* Glass card */
   .glass-card {
-    background: var(--surface-glass);
+    background: var(--surface-2);
     border: 1px solid var(--border-color);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
     border-radius: var(--radius-lg);
   }
 
-  /* Gradient text */
   .gradient-text {
-    background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--text-primary);
   }
 
-  /* Hover lift effect */
   .hover-lift {
     transition: transform var(--transition-base), box-shadow var(--transition-base);
     will-change: transform;
   }
 
   .hover-lift:hover {
-    transform: translateY(-4px) scale(1.01);
+    transform: translateY(-2px);
     box-shadow: var(--shadow-card-hover);
-  }
-
-  /* Active nav link indicator */
-  .nav-link-active {
-    position: relative;
-  }
-
-  .nav-link-active::after {
-    content: "";
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--brand-primary);
-    border-radius: var(--radius-full);
   }
 
   /* Scrollbar */
@@ -180,14 +151,10 @@
   }
 }
 
-/* ============================================
-   ANIMATIONS
-   ============================================ */
-
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -198,7 +165,7 @@
 @keyframes fadeInLeft {
   from {
     opacity: 0;
-    transform: translateX(-18px);
+    transform: translateX(-10px);
   }
   to {
     opacity: 1;
@@ -206,24 +173,10 @@
   }
 }
 
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 12px var(--brand-primary-glow); }
-  50% { box-shadow: 0 0 28px var(--brand-primary-glow); }
-}
-
 .animate-fade-in-up {
-  animation: fadeInUp 0.45s var(--transition-base) both;
+  animation: fadeInUp 0.3s var(--transition-base) both;
 }
 
 .animate-fade-in-left {
-  animation: fadeInLeft 0.45s var(--transition-base) both;
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 2.5s ease-in-out infinite;
+  animation: fadeInLeft 0.3s var(--transition-base) both;
 }
